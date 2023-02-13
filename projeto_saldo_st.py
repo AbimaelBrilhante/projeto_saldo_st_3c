@@ -41,31 +41,51 @@ def saldo_atual_provisorio():
 
 def sintetiza_dados():
     print("Calculando ST das entradas para as saidas")
-    cursor.execute("""CREATE TABLE saidas_sinteticas AS SELECT Material1,"Descrição Material1", "CFOP1",
-    "Tipo de Avaliação1",Empresa1,Centro1, SUM(Quantidade1), AVG(Valor_unit_ST) AS unit_st,(AVG(Valor_unit_ST))*SUM(Quantidade1) as total_st_entrada 
+    cursor.execute("""CREATE TABLE saidas_sinteticas AS SELECT *, AVG(Valor_unit_ST) 
+    AS unit_st,(AVG(Valor_unit_ST))*(Quantidade1) as total_st_entrada 
 	FROM saldo_atual_provisorio
     INNER JOIN SAIDAS_3C ON saldo_atual_provisorio.Material = SAIDAS_3C.Material1 AND
     saldo_atual_provisorio.Empresa = SAIDAS_3C.Empresa1 AND saldo_atual_provisorio.Centro = SAIDAS_3C.Centro1
-    GROUP BY Material1,Empresa1,Centro1 """)
+    GROUP BY Docnum1,Material1,Empresa1,Centro1,CFOP1,"Tipo de Avaliação1"  """)
     cxn.commit()
 
-def planilha_modelo_template():
+def planilha_modelo_template_entradas():
     print("Gerando planilha Template")
-    cursor.execute("""CREATE table modelo_template AS SELECT "ID do Cenário", "Data Lançamento", "Material", 
-    "Tipo de Avaliação","Docnum", "Empresa","Centro","Divisão","Valor ICMS","Valor ICMS ST",
-    "Valor IPI" FROM ENTRADAS_3C WHERE TIPO = "CALCULADO NA ENTRADA" """)
-    cxn.commit()
-    df = pd.read_sql("select * from planilha_modelo_template",cxn)
-    df.to_excel("saldo_atual.xlsx", index = False)
+    try:
+        cursor.execute("""CREATE table modelo_template_entradas AS SELECT "ID do Cenário", "Data Lançamento", "Material", 
+        "Tipo de Avaliação","Docnum", "Empresa","Centro","Divisão","Valor ICMS","Valor ICMS ST",
+        "Valor IPI" FROM ENTRADAS_3C WHERE TIPO = "CALCULADO NA ENTRADA" """)
+        cxn.commit()
+        df = pd.read_sql("select * from modelo_template_entradas",cxn)
+        df.to_excel("planilha_modelo_template_entradas.xlsx", index = False)
+
+    except:
+        df = pd.read_sql("select * from modelo_template_entradas", cxn)
+        df.to_excel("planilha_modelo_template_entradas.xlsx", index=False)
+
+def planilha_modelo_template_saidas():
+    print("Gerando planilha Template")
+    try:
+        cursor.execute("""CREATE table modelo_template_saidas AS select substring(CFOP1,1,1)
+        as "ID do Cenário", "Data de Lançamento",Material1,"Tipo de Avaliação1",Docnum1,Empresa1,
+        Centro1,"Divisão1","ICMS1",total_st_entrada,"IPI1" FROM saidas_sinteticas """)
+        cxn.commit()
+        df = pd.read_sql("select * from modelo_template_saidas",cxn)
+        df.to_excel("planilha_modelo_template_saidas.xlsx", index = False)
+
+    except:
+        df = pd.read_sql("select * from modelo_template_saidas", cxn)
+        df.to_excel("planilha_modelo_template_saidas.xlsx", index=False)
+
 
 
 def saldo_consistido():
     print("Consolidando Saldo Atual")
     cursor.execute("""create table SALDO_ATUAL as SELECT 
-	Empresa,Centro,Material,"Descrição Material",UM, 
-    SUM(Saldo_Qtd) AS qtd_entradas_sldanterior,SUM(Valor_unit_ST * Saldo_Qtd) as total_st, 
-    SUM(Valor_unit_ST) as unt_st, (SUM(Saldo_Qtd) - SUM("SUM(Quantidade1)")) AS saldo_atualizado, 
-    sum(Valor_unit_ST) * SUM(Saldo_Qtd) as total_st_atualizado,  sum(Valor_unit_ST) as unt_st_atualizado
+	saidas_sinteticas.Empresa , saidas_sinteticas.Centro,saidas_sinteticas.Material,saidas_sinteticas."Descrição Material", 
+    SUM(saidas_sinteticas.Saldo_Qtd) AS qtd_entradas_sldanterior,SUM(saidas_sinteticas.Valor_unit_ST * saidas_sinteticas.Saldo_Qtd) as total_st, 
+    SUM(saidas_sinteticas.Valor_unit_ST) as unt_st, (SUM(saidas_sinteticas.Saldo_Qtd) - SUM("SUM(Quantidade1)")) AS saldo_atualizado, 
+    sum(saidas_sinteticas.Valor_unit_ST) * SUM(saidas_sinteticas.Saldo_Qtd) as total_st_atualizado,  sum(saidas_sinteticas.Valor_unit_ST) as unt_st_atualizado
 
 	FROM 
 		saidas_sinteticas
@@ -74,7 +94,7 @@ INNER JOIN
 		saidas_sinteticas.Empresa1 = saldo_atual_provisorio.Empresa AND 
 		saidas_sinteticas.Centro1 = saldo_atual_provisorio.Centro
 GROUP BY 
-		Material,Empresa, Centro""")
+		saidas_sinteticas.Material,saidas_sinteticas.Empresa, saidas_sinteticas.Centro""")
     exclui_saldo_provisorio()
 
 def exclui_saldo_provisorio():
@@ -93,11 +113,12 @@ def exportar_saldo_atual():
 
 if __name__ == "__main__":
     pass
-    # importa()
-    # saldo_atual_provisorio()
-    # sintetiza_dados()
-    # saldo_consistido()
-    # planilha_modelo_template()
+    #importa()
+    #saldo_atual_provisorio()
+    #sintetiza_dados()
+    saldo_consistido()
+    planilha_modelo_template_entradas()
+    planilha_modelo_template_saidas()
     exportar_saldo_atual()
-    # cxn.close
+    cxn.close
 
