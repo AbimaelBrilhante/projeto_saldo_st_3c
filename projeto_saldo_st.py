@@ -1,7 +1,6 @@
 import sqlite3
 import pandas as pd
-import time
-
+import xlsxwriter
 
 
 cxn = sqlite3.connect('bd_saldo_icmsst.db')
@@ -31,12 +30,12 @@ def saldo_atual_provisorio():
     print("Calculando ST e Saldo total das entradas")
     cursor.execute("""CREATE table saldo_atual_provisorio AS SELECT Empresa, Centro, Divisão, Material, "Descrição Material",
     UM, SUM("Saldo Qtd") as Saldo_Qtd, SUM("ICMS ST Total Atualizado"), (SUM("ICMS ST Total Atualizado")/SUM("Saldo Qtd")) as Valor_unit_ST
-FROM(
+    FROM(
 	SELECT Empresa, Centro, Divisão, Material, "Descrição Material",UM,"ICMS ST Total Atualizado", "Saldo Qtd"  FROM SALDO_ANTERIOR
 		UNION ALL
 	SELECT Empresa, Centro, Divisão, Material, "Descrição Material",UM,"Valor ICMS ST", Quantidade FROM ENTRADAS_3C
 	) AS Total
-GROUP BY Material, Empresa, Centro, "Divisão" """)
+    GROUP BY Material, Empresa, Centro, "Divisão" """)
 
 
 
@@ -82,12 +81,15 @@ def exclui_saldo_provisorio():
     cursor.execute("""drop table saldo_atual_provisorio""")
 
 def exportar_saldo_atual():
+    writer = pd.ExcelWriter('saldo_atual.xlsx', engine='xlsxwriter')
     df = pd.read_sql("select * from SALDO_ATUAL",cxn)
-    df.to_excel("saldo_atual.xlsx", index = False)
+    df.to_excel(writer, index = False, sheet_name="Saldo_atual_detalhado")
+    df2 = pd.read_sql("SELECT EMPRESA, saldo_atualizado, total_st_atualizado FROM SALDO_ATUAL GROUP BY EMPRESA", cxn)
+    df2.to_excel(writer, index=False, sheet_name="saldo_atual_por_empresa")
+    df3 = pd.read_sql("SELECT EMPRESA,Centro, saldo_atualizado, total_st_atualizado FROM SALDO_ATUAL GROUP BY Centro, EMPRESA", cxn)
+    df3.to_excel(writer, index=False, sheet_name="saldo_atual_por_filial")
+    writer.save()
 
-
-# df = pd.read_sql("select * from SALDO_ATUAL")
-# df.to_excel("saldo_atual.xlsx", index = False)
 
 if __name__ == "__main__":
     pass
@@ -96,6 +98,6 @@ if __name__ == "__main__":
     # sintetiza_dados()
     # saldo_consistido()
     # planilha_modelo_template()
-    # exportar_saldo_atual
+    exportar_saldo_atual()
     # cxn.close
 
