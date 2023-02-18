@@ -1,6 +1,7 @@
 import sqlite3
 import pandas as pd
 import xlsxwriter
+import time
 
 
 cxn = sqlite3.connect('bd_saldo_icmsst.db')
