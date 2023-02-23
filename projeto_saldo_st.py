@@ -38,7 +38,20 @@ def saldo_atual_provisorio():
 	) AS Total
     GROUP BY Material, Empresa, Centro, "Divisão" """)
 
+def criar_coluna_tipo_contabilizacao_saidas():
+    cursor.execute("""ALTER TABLE SAIDAS_3C ADD COLUMN tipo_contabilizacao""")
+    tipo_contabilizacao_saidas()
 
+def tipo_contabilizacao_saidas():
+
+    cursor.execute("""UPDATE SAIDAS_3C
+SET 
+    tipo_contabilizacao = 
+    CASE WHEN SUBSTRING(CFOP1, 1,1) = "5" THEN "SEM RESSARCIMENTO" 
+	WHEN SUBSTRING(CFOP1, 1,4) = "6949" THEN "COM RESSARCIMENTO"
+	WHEN SUBSTRING(CFOP1, 1,2) = "69" THEN "SEM RESSARCIMENTO"
+	
+	ELSE "COM RESSARCIMENTO" END""")
 
 def sintetiza_dados():
     print("Calculando ST das entradas para as saidas")
@@ -47,7 +60,7 @@ def sintetiza_dados():
 	FROM saldo_atual_provisorio
     INNER JOIN SAIDAS_3C ON saldo_atual_provisorio.Material = SAIDAS_3C.Material1 AND
     saldo_atual_provisorio.Empresa = SAIDAS_3C.Empresa1 AND saldo_atual_provisorio.Centro = SAIDAS_3C.Centro1
-    GROUP BY Docnum1,Material1,Empresa1,Centro1,CFOP1,"Tipo de Avaliação1"  """)
+    GROUP BY Docnum1,Material1,Empresa1,Centro1,CFOP1,"Tipo de Avaliação1" ,"tipo_contabilizacao" """)
     cxn.commit()
 
 def planilha_modelo_template_entradas():
@@ -88,13 +101,13 @@ def saldo_consistido():
     SUM(saidas_sinteticas.Valor_unit_ST) as unt_st, (SUM(saidas_sinteticas.Saldo_Qtd) - SUM("SUM(Quantidade1)")) AS saldo_atualizado, 
     sum(saidas_sinteticas.Valor_unit_ST) * SUM(saidas_sinteticas.Saldo_Qtd) as total_st_atualizado,  sum(saidas_sinteticas.Valor_unit_ST) as unt_st_atualizado
 
-	FROM 
-		saidas_sinteticas
-INNER JOIN 
+	    FROM 
+		    saidas_sinteticas
+    INNER JOIN 
 		saldo_atual_provisorio ON saidas_sinteticas.Material1 = saldo_atual_provisorio.Material AND 
 		saidas_sinteticas.Empresa1 = saldo_atual_provisorio.Empresa AND 
 		saidas_sinteticas.Centro1 = saldo_atual_provisorio.Centro
-GROUP BY 
+    GROUP BY 
 		saidas_sinteticas.Material,saidas_sinteticas.Empresa, saidas_sinteticas.Centro""")
     exclui_saldo_provisorio()
 
@@ -115,6 +128,7 @@ def exportar_saldo_atual():
 if __name__ == "__main__":
     pass
     importa()
+    criar_coluna_tipo_contabilizacao_saidas()
     saldo_atual_provisorio()
     sintetiza_dados()
     saldo_consistido()
