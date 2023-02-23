@@ -114,9 +114,9 @@ def exportar_saldo_atual():
 
 if __name__ == "__main__":
     pass
-    #importa()
-    #saldo_atual_provisorio()
-    #sintetiza_dados()
+    importa()
+    saldo_atual_provisorio()
+    sintetiza_dados()
     saldo_consistido()
     planilha_modelo_template_entradas()
     planilha_modelo_template_saidas()
