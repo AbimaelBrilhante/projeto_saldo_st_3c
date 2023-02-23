@@ -82,7 +82,7 @@ def planilha_modelo_template_saidas():
     try:
         cursor.execute("""CREATE table modelo_template_saidas AS select substring(CFOP1,1,1)
         as "ID do Cenário", "Data de Lançamento",Material1,"Tipo de Avaliação1",Docnum1,Empresa1,
-        Centro1,"Divisão1","ICMS1",total_st_entrada,"IPI1" FROM saidas_sinteticas """)
+        Centro1,"Divisão1","ICMS1",total_st_entrada,"IPI1", "tipo_contabilizacao" FROM saidas_sinteticas ORDER BY "tipo_contabilizacao" """)
         cxn.commit()
         df = pd.read_sql("select * from modelo_template_saidas",cxn)
         df.to_excel("planilha_modelo_template_saidas.xlsx", index = False)
