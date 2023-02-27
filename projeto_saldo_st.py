@@ -3,20 +3,22 @@ import pandas as pd
 import xlsxwriter
 import time
 
-
 cxn = sqlite3.connect('bd_saldo_icmsst.db')
 cursor = cxn.cursor()
 
-def importa():
+
+def importa_saidas():
     print("Importanto Planilhas")
-    wb1 = pd.read_excel(r'C:\Users\abimaelsoares\Desktop\projeto_saldost\saidas pt1.xlsx',sheet_name = 'Análise 1')
-    wb1.to_sql(name='SAIDAS_3C',con=cxn,if_exists='append',index=False)
+    wb1 = pd.read_excel(r'C:\Users\abimaelsoares\Desktop\projeto_saldost\saidas pt1.xlsx', sheet_name='Análise 1')
+    wb1.to_sql(name='SAIDAS_3C', con=cxn, if_exists='append', index=False)
 
-    wb1 = pd.read_excel(r'C:\Users\abimaelsoares\Desktop\projeto_saldost\saidas pt2.xlsx',sheet_name = 'Análise 1')
-    wb1.to_sql(name='SAIDAS_3C',con=cxn,if_exists='append',index=False)
+    wb1 = pd.read_excel(r'C:\Users\abimaelsoares\Desktop\projeto_saldost\saidas pt2.xlsx', sheet_name='Análise 1')
+    wb1.to_sql(name='SAIDAS_3C', con=cxn, if_exists='append', index=False)
 
-    wb1 = pd.read_excel(r'C:\Users\abimaelsoares\Desktop\projeto_saldost\saidas pt3.xlsx',sheet_name = 'Análise 1')
-    wb1.to_sql(name='SAIDAS_3C',con=cxn,if_exists='append',index=False)
+    wb1 = pd.read_excel(r'C:\Users\abimaelsoares\Desktop\projeto_saldost\saidas pt3.xlsx', sheet_name='Análise 1')
+    wb1.to_sql(name='SAIDAS_3C', con=cxn, if_exists='append', index=False)
+
+def importa_entradas():
 
     wb2 = pd.read_excel(r'C:\Users\abimaelsoares\Desktop\projeto_saldost\entradas.xlsx', sheet_name='Entradas')
     wb2.to_sql(name='ENTRADAS_3C', con=cxn, if_exists='append', index=False)
@@ -38,20 +40,22 @@ def saldo_atual_provisorio():
 	) AS Total
     GROUP BY Material, Empresa, Centro, "Divisão" """)
 
+
 def criar_coluna_tipo_contabilizacao_saidas():
     cursor.execute("""ALTER TABLE SAIDAS_3C ADD COLUMN tipo_contabilizacao""")
     tipo_contabilizacao_saidas()
 
-def tipo_contabilizacao_saidas():
 
+def tipo_contabilizacao_saidas():
     cursor.execute("""UPDATE SAIDAS_3C
 SET 
     tipo_contabilizacao = 
     CASE WHEN SUBSTRING(CFOP1, 1,1) = "5" THEN "SEM RESSARCIMENTO" 
 	WHEN SUBSTRING(CFOP1, 1,4) = "6949" THEN "COM RESSARCIMENTO"
 	WHEN SUBSTRING(CFOP1, 1,2) = "69" THEN "SEM RESSARCIMENTO"
-	
+
 	ELSE "COM RESSARCIMENTO" END""")
+
 
 def sintetiza_dados():
     print("Calculando ST das entradas para as saidas")
@@ -63,6 +67,7 @@ def sintetiza_dados():
     GROUP BY Docnum1,Material1,Empresa1,Centro1,CFOP1,"Tipo de Avaliação1" ,"tipo_contabilizacao" """)
     cxn.commit()
 
+
 def planilha_modelo_template_entradas():
     print("Gerando planilha Template")
     try:
@@ -70,12 +75,13 @@ def planilha_modelo_template_entradas():
         "Tipo de Avaliação","Docnum", "Empresa","Centro","Divisão","Valor ICMS","Valor ICMS ST",
         "Valor IPI" FROM ENTRADAS_3C WHERE TIPO = "CALCULADO NA ENTRADA" """)
         cxn.commit()
-        df = pd.read_sql("select * from modelo_template_entradas",cxn)
-        df.to_excel("planilha_modelo_template_entradas.xlsx", index = False)
+        df = pd.read_sql("select * from modelo_template_entradas", cxn)
+        df.to_excel("planilha_modelo_template_entradas.xlsx", index=False)
 
     except:
         df = pd.read_sql("select * from modelo_template_entradas", cxn)
         df.to_excel("planilha_modelo_template_entradas.xlsx", index=False)
+
 
 def planilha_modelo_template_saidas():
     print("Gerando planilha Template")
@@ -84,13 +90,12 @@ def planilha_modelo_template_saidas():
         as "ID do Cenário", "Data de Lançamento",Material1,"Tipo de Avaliação1",Docnum1,Empresa1,
         Centro1,"Divisão1","ICMS1",total_st_entrada,"IPI1", "tipo_contabilizacao" FROM saidas_sinteticas ORDER BY "tipo_contabilizacao" """)
         cxn.commit()
-        df = pd.read_sql("select * from modelo_template_saidas",cxn)
-        df.to_excel("planilha_modelo_template_saidas.xlsx", index = False)
+        df = pd.read_sql("select * from modelo_template_saidas", cxn)
+        df.to_excel("planilha_modelo_template_saidas.xlsx", index=False)
 
     except:
         df = pd.read_sql("select * from modelo_template_saidas", cxn)
         df.to_excel("planilha_modelo_template_saidas.xlsx", index=False)
-
 
 
 def saldo_consistido():
@@ -100,7 +105,6 @@ def saldo_consistido():
     SUM(saidas_sinteticas.Saldo_Qtd) AS qtd_entradas_sldanterior,SUM(saidas_sinteticas.Valor_unit_ST * saidas_sinteticas.Saldo_Qtd) as total_st, 
     SUM(saidas_sinteticas.Valor_unit_ST) as unt_st, (SUM(saidas_sinteticas.Saldo_Qtd) - SUM("SUM(Quantidade1)")) AS saldo_atualizado, 
     sum(saidas_sinteticas.Valor_unit_ST) * SUM(saidas_sinteticas.Saldo_Qtd) as total_st_atualizado,  sum(saidas_sinteticas.Valor_unit_ST) as unt_st_atualizado
-
 	    FROM 
 		    saidas_sinteticas
     INNER JOIN 
@@ -111,16 +115,19 @@ def saldo_consistido():
 		saidas_sinteticas.Material,saidas_sinteticas.Empresa, saidas_sinteticas.Centro""")
     exclui_saldo_provisorio()
 
+
 def exclui_saldo_provisorio():
     cursor.execute("""drop table saldo_atual_provisorio""")
 
+
 def exportar_saldo_atual():
     writer = pd.ExcelWriter('saldo_atual.xlsx', engine='xlsxwriter')
-    df = pd.read_sql("select * from SALDO_ATUAL",cxn)
-    df.to_excel(writer, index = False, sheet_name="Saldo_atual_detalhado")
+    df = pd.read_sql("select * from SALDO_ATUAL", cxn)
+    df.to_excel(writer, index=False, sheet_name="Saldo_atual_detalhado")
     df2 = pd.read_sql("SELECT EMPRESA, saldo_atualizado, total_st_atualizado FROM SALDO_ATUAL GROUP BY EMPRESA", cxn)
     df2.to_excel(writer, index=False, sheet_name="saldo_atual_por_empresa")
-    df3 = pd.read_sql("SELECT EMPRESA,Centro, saldo_atualizado, total_st_atualizado FROM SALDO_ATUAL GROUP BY Centro, EMPRESA", cxn)
+    df3 = pd.read_sql(
+        "SELECT EMPRESA,Centro, saldo_atualizado, total_st_atualizado FROM SALDO_ATUAL GROUP BY Centro, EMPRESA", cxn)
     df3.to_excel(writer, index=False, sheet_name="saldo_atual_por_filial")
     writer.save()
 
@@ -136,4 +143,3 @@ if __name__ == "__main__":
     planilha_modelo_template_saidas()
     exportar_saldo_atual()
     cxn.close
-
