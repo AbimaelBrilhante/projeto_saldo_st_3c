@@ -134,7 +134,8 @@ def exportar_saldo_atual():
 
 if __name__ == "__main__":
     pass
-    importa()
+    importa_entradas()
+    importa_saidas()
     criar_coluna_tipo_contabilizacao_saidas()
     saldo_atual_provisorio()
     sintetiza_dados()
