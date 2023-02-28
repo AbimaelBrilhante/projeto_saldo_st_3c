@@ -2,25 +2,25 @@ import sqlite3
 import pandas as pd
 import xlsxwriter
 import time
+from tkinter import filedialog
 
 cxn = sqlite3.connect('bd_saldo_icmsst.db')
 cursor = cxn.cursor()
 
 
 def importa_saidas():
+    filename_saida = filedialog.askopenfilename(initialdir="/home", title="Select a File",
+                                          filetypes=(("Text files", "*.*"), ("all files", "*.*")))
     print("Importanto Planilhas")
-    wb1 = pd.read_excel(r'C:\Users\abimaelsoares\Desktop\projeto_saldost\saidas pt1.xlsx', sheet_name='Análise 1')
+    wb1 = pd.read_excel(filename_saida, sheet_name='Análise 1')
     wb1.to_sql(name='SAIDAS_3C', con=cxn, if_exists='append', index=False)
 
-    wb1 = pd.read_excel(r'C:\Users\abimaelsoares\Desktop\projeto_saldost\saidas pt2.xlsx', sheet_name='Análise 1')
-    wb1.to_sql(name='SAIDAS_3C', con=cxn, if_exists='append', index=False)
-
-    wb1 = pd.read_excel(r'C:\Users\abimaelsoares\Desktop\projeto_saldost\saidas pt3.xlsx', sheet_name='Análise 1')
-    wb1.to_sql(name='SAIDAS_3C', con=cxn, if_exists='append', index=False)
 
 def importa_entradas():
+    filename_entrada = filedialog.askopenfilename(initialdir="/home", title="Select a File",
+                                          filetypes=(("Text files", "*.*"), ("all files", "*.*")))
 
-    wb2 = pd.read_excel(r'C:\Users\abimaelsoares\Desktop\projeto_saldost\entradas.xlsx', sheet_name='Entradas')
+    wb2 = pd.read_excel(filename_entrada, sheet_name='Entradas')
     wb2.to_sql(name='ENTRADAS_3C', con=cxn, if_exists='append', index=False)
 
     wb3 = pd.read_excel(r'C:\Users\abimaelsoares\Desktop\projeto_saldost\entradas.xlsx', sheet_name='Saldo Anterior')
@@ -29,7 +29,9 @@ def importa_entradas():
     cxn.commit()
 
 def importa_ressarcimento_TIMP():
-    wb4 = pd.read_excel(r'C:\Users\abimaelsoares\Desktop\projeto_saldost\Ressarcimento Timp.xlsx')
+    filename_ressarcimento_timp = filedialog.askopenfilename(initialdir="/home", title="Select a File",
+                                          filetypes=(("Text files", "*.*"), ("all files", "*.*")))
+    wb4 = pd.read_excel(filename_ressarcimento_timp)
     wb4.to_sql(name="RESS_TIMP", con=cxn, if_exists='append', index=False)
 
 
@@ -143,7 +145,7 @@ if __name__ == "__main__":
     # importa_entradas()
     # importa_saidas()
     # criar_coluna_tipo_contabilizacao_saidas()
-    saldo_atual_provisorio()
+    # saldo_atual_provisorio()
     # sintetiza_dados()
     # saldo_consistido()
     # planilha_modelo_template_entradas()
@@ -156,3 +158,5 @@ if __name__ == "__main__":
 #### parametrizar id saidas
 #### conferir e definir layouts finais
 #### cabeçalho dos relatorios
+#### mensagens de erro
+#### barra de progresso
