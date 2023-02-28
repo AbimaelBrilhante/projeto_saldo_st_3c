@@ -28,15 +28,21 @@ def importa_entradas():
 
     cxn.commit()
 
+def importa_ressarcimento_TIMP():
+    wb4 = pd.read_excel(r'C:\Users\abimaelsoares\Desktop\projeto_saldost\Ressarcimento Timp.xlsx')
+    wb4.to_sql(name="RESS_TIMP", con=cxn, if_exists='append', index=False)
+
+
 
 def saldo_atual_provisorio():
     print("Calculando ST e Saldo total das entradas")
     cursor.execute("""CREATE table saldo_atual_provisorio AS SELECT Empresa, Centro, Divisão, Material, "Descrição Material",
     UM, SUM("Saldo Qtd") as Saldo_Qtd, SUM("ICMS ST Total Atualizado"), (SUM("ICMS ST Total Atualizado")/SUM("Saldo Qtd")) as Valor_unit_ST
+        
     FROM(
 	SELECT Empresa, Centro, Divisão, Material, "Descrição Material",UM,"ICMS ST Total Atualizado", "Saldo Qtd"  FROM SALDO_ANTERIOR
 		UNION ALL
-	SELECT Empresa, Centro, Divisão, Material, "Descrição Material",UM,"Valor ICMS ST", Quantidade FROM ENTRADAS_3C
+	SELECT Empresa, Centro, Divisão, Material, "Descrição Material",UM,"Valor ICMS ST", Quantidade FROM ENTRADAS_3C  WHERE TIPO == "CALCULADO NA ENTRADA" 
 	) AS Total
     GROUP BY Material, Empresa, Centro, "Divisão" """)
 
@@ -59,8 +65,8 @@ SET
 
 def sintetiza_dados():
     print("Calculando ST das entradas para as saidas")
-    cursor.execute("""CREATE TABLE saidas_sinteticas AS SELECT *, AVG(Valor_unit_ST) 
-    AS unit_st,(AVG(Valor_unit_ST))*(Quantidade1) as total_st_entrada 
+    cursor.execute("""CREATE TABLE saidas_sinteticas AS SELECT SUM(Quantidade1) as saldo_saidas,*, AVG(Valor_unit_ST) 
+    AS unit_st,(AVG(Valor_unit_ST))*(sum(Quantidade1)) as total_st_entrada 
 	FROM saldo_atual_provisorio
     INNER JOIN SAIDAS_3C ON saldo_atual_provisorio.Material = SAIDAS_3C.Material1 AND
     saldo_atual_provisorio.Empresa = SAIDAS_3C.Empresa1 AND saldo_atual_provisorio.Centro = SAIDAS_3C.Centro1
@@ -103,7 +109,7 @@ def saldo_consistido():
     cursor.execute("""create table SALDO_ATUAL as SELECT 
 	saidas_sinteticas.Empresa , saidas_sinteticas.Centro,saidas_sinteticas.Material,saidas_sinteticas."Descrição Material", 
     SUM(saidas_sinteticas.Saldo_Qtd) AS qtd_entradas_sldanterior,SUM(saidas_sinteticas.Valor_unit_ST * saidas_sinteticas.Saldo_Qtd) as total_st, 
-    SUM(saidas_sinteticas.Valor_unit_ST) as unt_st, (SUM(saidas_sinteticas.Saldo_Qtd) - SUM("SUM(Quantidade1)")) AS saldo_atualizado, 
+    SUM(saidas_sinteticas.Valor_unit_ST) as unt_st, (SUM(saidas_sinteticas.Saldo_Qtd) - SUM(saldo_saidas)) AS saldo_atualizado, 
     sum(saidas_sinteticas.Valor_unit_ST) * SUM(saidas_sinteticas.Saldo_Qtd) as total_st_atualizado,  sum(saidas_sinteticas.Valor_unit_ST) as unt_st_atualizado
 	    FROM 
 		    saidas_sinteticas
@@ -113,7 +119,7 @@ def saldo_consistido():
 		saidas_sinteticas.Centro1 = saldo_atual_provisorio.Centro
     GROUP BY 
 		saidas_sinteticas.Material,saidas_sinteticas.Empresa, saidas_sinteticas.Centro""")
-    exclui_saldo_provisorio()
+    #exclui_saldo_provisorio()
 
 
 def exclui_saldo_provisorio():
@@ -134,13 +140,19 @@ def exportar_saldo_atual():
 
 if __name__ == "__main__":
     pass
-    importa_entradas()
-    importa_saidas()
-    criar_coluna_tipo_contabilizacao_saidas()
+    # importa_entradas()
+    # importa_saidas()
+    # criar_coluna_tipo_contabilizacao_saidas()
     saldo_atual_provisorio()
-    sintetiza_dados()
-    saldo_consistido()
-    planilha_modelo_template_entradas()
-    planilha_modelo_template_saidas()
-    exportar_saldo_atual()
+    # sintetiza_dados()
+    # saldo_consistido()
+    # planilha_modelo_template_entradas()
+    # planilha_modelo_template_saidas()
+    # exportar_saldo_atual()
+    # importa_ressarcimento_TIMP()
     cxn.close
+
+
+#### parametrizar id saidas
+#### conferir e definir layouts finais
+#### cabeçalho dos relatorios
