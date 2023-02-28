@@ -1,6 +1,5 @@
 import tkinter as tk
 from tkinter import ttk
-import random
 import projeto_saldo_st
 from tkinter import *
 import tkinter as tk
