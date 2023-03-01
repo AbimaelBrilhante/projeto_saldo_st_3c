@@ -44,7 +44,7 @@ def saldo_atual_provisorio():
     FROM(
 	SELECT Empresa, Centro, Divisão, Material, "Descrição Material",UM,"ICMS ST Total Atualizado", "Saldo Qtd"  FROM SALDO_ANTERIOR
 		UNION ALL
-	SELECT Empresa, Centro, Divisão, Material, "Descrição Material",UM,"Valor ICMS ST", Quantidade FROM ENTRADAS_3C  WHERE TIPO == "CALCULADO NA ENTRADA" 
+	SELECT Empresa, Centro, Divisão, Material, "Descrição Material",UM,"Valor ICMS ST", Quantidade FROM ENTRADAS_3C  WHERE TIPO <> "DESTACADO NA NF" 
 	) AS Total
     GROUP BY Material, Empresa, Centro, "Divisão" """)
 

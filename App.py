@@ -25,10 +25,14 @@ def mensagem_processamento():
 
 root = Single_window()
 
+
 title_app = tk.Frame(root)
-space_0 = ttk.Label(title_app,text="\n Menu Principal \n _________________________________________________________________________"
-                                   "_________________________________________________________________________________"
-                                   "____________________________________________",width=6007, padding=5, font= "Arial 12")
+space_0 = ttk.Label(title_app,text="\n                                                                                  "
+                                   "                                                                                    "
+                                   "                                                          Menu Principal\n"
+                                   " _________________________________________________________________________"
+                                   "______________________________________________________________________________________________"
+                                   "____________________________________________",width=6007, padding=5, font= "Arial 12", foreground="#a19f9f")
 space_0.grid(row=0,column=0)
 title_app.pack(side = 'top')
 
@@ -49,7 +53,7 @@ button_4 = Button(button_f1, text = f"IRS \n \n {msg1}", bg="#95c45c",width=21, 
 button_4.grid(row=1, column=0, columnspan=1)
 button_4["command"] = lambda:[projeto_saldo_st.importa_saidas(), mensagem_importa()]
 
-space_1 = ttk.Panedwindow(button_f1,width=100)
+space_1 = PanedWindow(button_f1,width=100,background="#cacbd2")
 space_1.grid(row=1, column=1, columnspan=1)
 
 button_5 = Button(button_f1, text = f"IRE \n \n {msg2}", bg="#95c45c",width=21, pady=60,padx=10, border=2,font='arial 16')
@@ -64,7 +68,7 @@ button_7 = Button(button_f2, text = f"EPT \n \n {msg3}", bg="#d99591",width=21, 
 button_7.grid(row=3, column=0)
 button_7["command"] = lambda:[projeto_saldo_st.planilha_modelo_template_saidas(),projeto_saldo_st.planilha_modelo_template_entradas(),mensagem_exporta()]
 
-space_2 = ttk.Panedwindow(button_f2,width=100,height=30)
+space_2 = PanedWindow(button_f2,width=100,height=30,background="#cacbd2")
 space_2.grid(row=2, column=1, columnspan=1)
 
 button_8 = Button(button_f2, text = f"ESA \n \n {msg4}", bg="#d99591",width=21, pady=60,padx=10, border=2,font='arial 16')
@@ -79,7 +83,7 @@ button_10 = Button(button_f3, text = '\n IRT \n',bg="#ab91bd",width=21, pady=60,
 button_10.grid(row=4, column=0)
 button_10["command"] = mensagem_exporta
 
-space_3 = ttk.Panedwindow(button_f3,width=100,height=30)
+space_3 = PanedWindow(button_f3,width=100,height=30,background="#cacbd2")
 space_3.grid(row=3, column=1, columnspan=1)
 
 button_11 = Button(button_f3, text = '\n IRC \n ',bg="#ab91bd",width=21, pady=60,padx=10, border=2,font='arial 16')
@@ -88,20 +92,20 @@ button_f3.pack(side = 'top')
 
 
 title_app10 = tk.Frame(root)
-space_10 = Label(title_app10,text="",width=27, font= "Arial 24 bold")
+space_10 = Label(title_app10,text="",width=2700, font= "Arial 24 bold",border=1,foreground="#cacbd2")
 space_10.grid(row=6,column=0)
 title_app10.pack(side = 'bottom')
 
 
 
 
-button_f40 = tk.Frame(root)
-button_120 = Button(button_f40, text = 'Processar',bg="#D1D1D1",width=1500, pady=7,padx=200,font='arial 12 bold')
-button_120.grid(row=8, column=0)
-button_f40.pack(side = 'bottom')
+button_f41 = tk.Frame(root)
+button_121 = Button(button_f41, text = 'Processar',width=1500, pady=7,padx=20,font='arial 12 bold', border=10, borderwidth=0)
+button_121.grid(row=8, column=0)
+button_f41.pack(side = 'bottom')
 
 button_f40 = tk.Frame(root)
-button_120 = Button(button_f40, text = '',bg="#F0F0F0",width=1500, pady=7,padx=200,font='arial 12 bold', border=0)
+button_120 = Button(button_f40, text = '',width=1500, pady=7,padx=2000,font='arial 12 bold', border=0,background="#cacbd2")
 button_120.grid(row=8, column=0)
 button_f40.pack(side = 'bottom')
 
@@ -116,6 +120,14 @@ button_f4.pack(side = 'bottom')
 
 
 
+
+button_f1.configure(background="#cacbd2")
+button_f2.configure(background="#cacbd2")
+button_f3.configure(background="#cacbd2")
+
+
+
+root.configure(background="#cacbd2")
 
 root.mainloop()
 
