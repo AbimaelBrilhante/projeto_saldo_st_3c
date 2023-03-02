@@ -125,19 +125,13 @@ def planilha_modelo_template_saidas():
 
 def saldo_consistido():
     print("Consolidando Saldo Atual")
-    cursor.execute("""create table SALDO_ATUAL as SELECT 
-	saidas_sinteticas.Empresa , saidas_sinteticas.Centro,saidas_sinteticas.Material,saidas_sinteticas."Descrição Material", 
-    SUM(saidas_sinteticas.Saldo_Qtd) AS qtd_entradas_sldanterior,SUM(saidas_sinteticas.Valor_unit_ST * saidas_sinteticas.Saldo_Qtd) as total_st, 
-    SUM(saidas_sinteticas.Valor_unit_ST) as unt_st, (SUM(saidas_sinteticas.Saldo_Qtd) - SUM(saldo_saidas)) AS saldo_atualizado, 
-    sum(saidas_sinteticas.Valor_unit_ST) * SUM(saidas_sinteticas.Saldo_Qtd) as total_st_atualizado,  sum(saidas_sinteticas.Valor_unit_ST) as unt_st_atualizado
-	    FROM 
-		    saidas_sinteticas
-    INNER JOIN 
-		saldo_atual_provisorio ON saidas_sinteticas.Material1 = saldo_atual_provisorio.Material AND 
-		saidas_sinteticas.Empresa1 = saldo_atual_provisorio.Empresa AND 
-		saidas_sinteticas.Centro1 = saldo_atual_provisorio.Centro
-    GROUP BY 
-		saidas_sinteticas.Material,saidas_sinteticas.Empresa, saidas_sinteticas.Centro""")
+    cursor.execute("""create table SALDO_ATUAL as select sap.Empresa, sap.Centro,sap.Divisão,sap.Material,sap.Descricao_Material,sap.UM, sum(sap.Saldo_Qtd) AS "Saldo Qtd", sum(sap.'SUM("ICMS ST Total Atualizado")') as "ICMS ST Total Atualizado",
+        sum(sap.Valor_unit_ST) as "ICMS ST Unit Atualizado"
+    from saldo_atual_provisorio sap
+    left join saidas_sinteticas on sap.Material = saidas_sinteticas.Material1
+
+    group by
+        sap.Material,sap.Empresa,sap.Centro""")
     #exclui_saldo_provisorio()
 
 
