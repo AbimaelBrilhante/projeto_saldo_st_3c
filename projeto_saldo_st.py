@@ -22,7 +22,7 @@ def importa_entradas():
     wb2 = pd.read_excel(filename_entrada, sheet_name='Entradas')
     wb2.to_sql(name='ENTRADAS_3C', con=cxn, if_exists='append', index=False)
 
-    wb3 = pd.read_excel(r'C:\Users\abimaelsoares\Desktop\projeto_saldost\entradas.xlsx', sheet_name='Saldo Anterior')
+    wb3 = pd.read_excel(r'C:\Users\abimaelsoares\Desktop\projeto_saldost\Entradas 02.2023.xlsx', sheet_name='Saldo Anterior')
     wb3.to_sql(name='SALDO_ANTERIOR', con=cxn, if_exists='append', index=False)
 
     cxn.commit()
@@ -42,13 +42,13 @@ def importa_ressarcimento_TIMP():
 
 def saldo_atual_provisorio():
     print("Calculando ST e Saldo total das entradas")
-    cursor.execute("""CREATE table saldo_atual_provisorio AS SELECT Empresa, Centro, Divisão, Material, "Descrição Material",
-    UM, SUM("Saldo Qtd") as Saldo_Qtd, SUM("ICMS ST Total Atualizado"), (SUM("ICMS ST Total Atualizado")/SUM("Saldo Qtd")) as Valor_unit_ST
+    cursor.execute("""CREATE table saldo_atual_provisorio AS SELECT Empresa, Centro, Divisão, Material, "Descrição Material" as Descricao_Material,
+    UM, SUM("Saldo Qtd") as Saldo_Qtd, SUM("ICMS ST Total Atualizado" + "Valor ICMS") AS total_st_bruto_atualizado, (SUM("ICMS ST Total Atualizado" + "Valor ICMS")/SUM("Saldo Qtd")) as Valor_unit_ST
         
     FROM(
-	SELECT Empresa, Centro, Divisão, Material, "Descrição Material",UM,"ICMS ST Total Atualizado", "Saldo Qtd"  FROM SALDO_ANTERIOR
+	SELECT Empresa, Centro, Divisão, Material, "Descrição Material",UM,"ICMS ST Total Atualizado", "Saldo Qtd","Valor ICMS"  FROM SALDO_ANTERIOR
 		UNION ALL
-	SELECT Empresa, Centro, Divisão, Material, "Descrição Material",UM,"Valor ICMS ST", Quantidade FROM ENTRADAS_3C  WHERE TIPO = "CALCULADO NA ENTRADA" 
+	SELECT Empresa, Centro, Divisão, Material, "Descrição Material",UM,"Valor ICMS ST", Quantidade, "Valor ICMS" FROM ENTRADAS_3C  WHERE TIPO = "CALCULADO NA ENTRADA"
 	) AS Total
     GROUP BY Material, Empresa, Centro, "Divisão" """)
 
@@ -108,7 +108,7 @@ def planilha_modelo_template_saidas():
         df = pd.read_sql("select * from modelo_template_saidas", cxn)
         df.to_excel("planilha_modelo_template_saidas.xlsx", index=False)
 
-        cursor.execute("""CREATE table modelo_template_devolucoes AS select "1"
+        cursor.execute("""CREATE table modelo_template_devolucoes AS select "10"
         as "ID do Cenário", "Data Lançamento99",Material99,"Tipo de Avaliação99",Docnum99,Empresa99,
         Centro99,"Divisão99","Valor ICMS99",total_st_entrada,"Valor IPI99" FROM devolucoes_sinteticas """)
         cxn.commit()
@@ -125,15 +125,16 @@ def planilha_modelo_template_saidas():
 
 def saldo_consistido():
     print("Consolidando Saldo Atual")
-    cursor.execute("""create table SALDO_ATUAL as select sap.Empresa, sap.Centro,sap.Divisão,sap.Material,sap.Descricao_Material,sap.UM, sum(sap.Saldo_Qtd) AS "Saldo Qtd", sum(sap.'SUM("ICMS ST Total Atualizado")') as "ICMS ST Total Atualizado",
-        sum(sap.Valor_unit_ST) as "ICMS ST Unit Atualizado"
+    cursor.execute("""create table SALDO_ATUAL as select sap.Empresa, sap.Centro,sap.Divisão,
+    sap.Material,sap.Descricao_Material,sap.UM, (sap.Saldo_Qtd - sum(saldo_saidas)) AS "Saldo Qtd", 
+    avg(sap.total_st_bruto_atualizado) as "ICMS ST Total Atualizado",
+    AVG(sap.Valor_unit_ST) as "ICMS ST Unit Atualizado", "Valor ICMS"
     from saldo_atual_provisorio sap
-    left join saidas_sinteticas on sap.Material = saidas_sinteticas.Material1
-
+    left join saidas_sinteticas on sap.Material = saidas_sinteticas.Material1 and sap.Empresa = saidas_sinteticas.Empresa and sap.Centro = saidas_sinteticas.Centro and sap."Divisão" = saidas_sinteticas.Divisão
+	
     group by
-        sap.Material,sap.Empresa,sap.Centro""")
+        sap.Material,sap.Empresa,sap.Centro, sap.Divisão""")
     #exclui_saldo_provisorio()
-
 
 def exclui_saldo_provisorio():
     cursor.execute("""drop table saldo_atual_provisorio""")
@@ -142,10 +143,10 @@ def exportar_saldo_atual():
     writer = pd.ExcelWriter('saldo_atual.xlsx', engine='xlsxwriter')
     df = pd.read_sql("select * from SALDO_ATUAL", cxn)
     df.to_excel(writer, index=False, sheet_name="Saldo_atual_detalhado")
-    df2 = pd.read_sql("SELECT EMPRESA, saldo_atualizado, total_st_atualizado FROM SALDO_ATUAL GROUP BY EMPRESA", cxn)
+    df2 = pd.read_sql("SELECT EMPRESA, 'Saldo Qtd', 'ICMS ST Total Atualizado' FROM SALDO_ATUAL GROUP BY EMPRESA", cxn)
     df2.to_excel(writer, index=False, sheet_name="saldo_atual_por_empresa")
     df3 = pd.read_sql(
-        "SELECT EMPRESA,Centro, saldo_atualizado, total_st_atualizado FROM SALDO_ATUAL GROUP BY Centro, EMPRESA", cxn)
+        "SELECT EMPRESA,Centro, 'Saldo Qtd', 'ICMS ST Total Atualizado' FROM SALDO_ATUAL GROUP BY Centro, EMPRESA", cxn)
     df3.to_excel(writer, index=False, sheet_name="saldo_atual_por_filial")
     writer.save()
 
@@ -156,10 +157,10 @@ if __name__ == "__main__":
     # criar_coluna_tipo_contabilizacao_saidas()
     # saldo_atual_provisorio()
     # sintetiza_dados()
-    # saldo_consistido()
+    saldo_consistido()
     # planilha_modelo_template_entradas()
     # planilha_modelo_template_saidas()
-    # exportar_saldo_atual()
+    exportar_saldo_atual()
     # importa_ressarcimento_TIMP()
     cxn.close
 
