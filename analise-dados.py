@@ -5,3 +5,5 @@ plan = pd.read_excel(excel, sheet_name="Conciliação Entradas")
 plan_edit = plan.loc[plan['Vlr ICMS']!=0]
 
 plan.groupby('Tributação')
+##
+
