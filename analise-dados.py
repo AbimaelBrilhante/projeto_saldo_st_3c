@@ -4,6 +4,6 @@ excel = r"C:\Users\abimaelsoares\Desktop\CONCILIAÇÃO\Conciliação Fiscal 4ª 
 plan = pd.read_excel(excel, sheet_name="Conciliação Entradas")
 plan_edit = plan.loc[plan['Vlr ICMS']!=0]
 
-plan.groupby('Tributação')
+plan.groupby('Tributação').sum()
 ##
 
