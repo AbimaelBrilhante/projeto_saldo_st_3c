@@ -1,0 +1,8 @@
+* importar o ressarcvimento (9) já com o valor calculado e refazer o saldo
+* gerar uma planilha só de template para saidas e devolução
+* excluir coluna I template saidas (ICMS NORMAL)
+
+* contabilização das entradas por filial (cada analista faz o seu)
+* colocar o banco de dados na rede (VALIDAR DUPLICADOS)
+* WHERE DESTACADO NA NF - adicionar ao saldo para calculo
+* VERIFICAÇÃO DE SALDO DE ESTOQUE NEGATIVO
