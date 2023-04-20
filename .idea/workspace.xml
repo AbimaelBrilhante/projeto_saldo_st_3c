@@ -5,16 +5,22 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="09d18b57-e3c3-4b4b-958a-00386544fcf3" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/projeto_saldo_st_3c.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/projeto_saldo_st_3c.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/App.py" beforeDir="false" afterPath="$PROJECT_DIR$/App.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/analise-dados.py" beforeDir="false" afterPath="$PROJECT_DIR$/analise-dados.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bd_saldo_icmsst.db" beforeDir="false" afterPath="$PROJECT_DIR$/bd_saldo_icmsst.db" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/planilha_modelo_template_devolucoes.xlsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/planilha_modelo_template_saidas.xlsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projeto_saldo_st.py" beforeDir="false" afterPath="$PROJECT_DIR$/projeto_saldo_st.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/saldo_atual.xlsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/App.spec" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/App.zip" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bd_saldo_icmsst.db" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/App/Analysis-00.toc" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/App/App.exe.manifest" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/App/App.pkg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/App/EXE-00.toc" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/App/PKG-00.toc" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/App/PYZ-00.pyz" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/App/PYZ-00.toc" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/App/Tree-00.toc" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/App/Tree-01.toc" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/App/Tree-02.toc" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/App/base_library.zip" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/App/warn-App.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/App/xref-App.html" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
