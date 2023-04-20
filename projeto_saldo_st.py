@@ -1,10 +1,10 @@
 import sqlite3
 import pandas as pd
-import xlsxwriter
+#import xlsxwriter
 import time
 from tkinter import filedialog
 
-cxn = sqlite3.connect('bd_saldo_icmsst.db')
+cxn = sqlite3.connect(r'X:\CONTROLADORIA\COMPLIANCE FISCAL\APURAÇÃO & CONCILIAÇÃO FISCAL\CONTROLES\Saldos Contábeis\MR22\bd_saldo_icmsst.db')
 cursor = cxn.cursor()
 
 
@@ -48,7 +48,7 @@ def saldo_atual_provisorio():
     FROM(
 	SELECT Empresa, Centro, Divisão, Material, "Descrição Material",UM,"ICMS ST Total Atualizado", "Saldo Qtd","Valor ICMS"  FROM SALDO_ANTERIOR
 		UNION ALL
-	SELECT Empresa, Centro, Divisão, Material, "Descrição Material",UM,"Valor ICMS ST", Quantidade, "Valor ICMS" FROM ENTRADAS_3C  WHERE TIPO = "CALCULADO NA ENTRADA"
+	SELECT Empresa, Centro, Divisão, Material, "Descrição Material",UM,"Valor ICMS ST", Quantidade, "Valor ICMS" FROM ENTRADAS_3C  WHERE TIPO = "CALCULADO NA ENTRADA" OR "DESTACADO NA NF"
 	) AS Total
     GROUP BY Material, Empresa, Centro, "Divisão" """)
 
@@ -92,25 +92,27 @@ def planilha_modelo_template_entradas():
         "Valor IPI" FROM ENTRADAS_3C WHERE TIPO <> "DESTACADO NA NF" """)
         cxn.commit()
         df = pd.read_sql("select * from modelo_template_entradas", cxn)
-        df.to_excel("planilha_modelo_template_entradas.xlsx", index=False)
+        #df.to_excel("planilha_modelo_template_entradas.xlsx", index=False)
+        df.to_excel(r"C:\TEMP\planilha_modelo_template_entradas.xlsx", index=False)
 
     except:
         df = pd.read_sql("select * from modelo_template_entradas", cxn)
-        df.to_excel("planilha_modelo_template_entradas.xlsx", index=False)
+        df.to_excel(r"C:\TEMP\planilha_modelo_template_entradas.xlsx", index=False)
 
 def planilha_modelo_template_saidas():
     print("Gerando planilha Template")
     try:
         cursor.execute("""CREATE table modelo_template_saidas AS select substring(CFOP1,1,1)
         as "ID do Cenário", "Data de Lançamento",Material1,"Tipo de Avaliação1",Docnum1,Empresa1,
-        Centro1,"Divisão1","ICMS1",total_st_entrada,"IPI1", "tipo_contabilizacao" FROM saidas_sinteticas ORDER BY "tipo_contabilizacao" """)
+        Centro1,"Divisão1","",total_st_entrada,"IPI1", "tipo_contabilizacao" FROM saidas_sinteticas ORDER BY "tipo_contabilizacao" """)
         cxn.commit()
         df = pd.read_sql("select * from modelo_template_saidas", cxn)
         df.to_excel("planilha_modelo_template_saidas.xlsx", index=False)
 
         cursor.execute("""CREATE table modelo_template_devolucoes AS select "10"
         as "ID do Cenário", "Data Lançamento99",Material99,"Tipo de Avaliação99",Docnum99,Empresa99,
-        Centro99,"Divisão99","Valor ICMS99",total_st_entrada,"Valor IPI99" FROM devolucoes_sinteticas """)
+        Centro99,"Divisão99","",total_st_entrada,"Valor IPI99" FROM devolucoes_sinteticas """)
+        #ICMS1 // Valor ICMS99
         cxn.commit()
         df2 = pd.read_sql("select * from modelo_template_devolucoes", cxn)
         df2.to_excel("planilha_modelo_template_devolucoes.xlsx", index=False)

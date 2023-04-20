@@ -4,6 +4,7 @@ import projeto_saldo_st
 from tkinter import *
 import tkinter as tk
 from tkinter import messagebox
+import projeto_saldo_st
 
 class Single_window(tk.Tk):
     def __init__(self):
