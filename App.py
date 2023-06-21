@@ -4,7 +4,7 @@ import projeto_saldo_st
 from tkinter import *
 import tkinter as tk
 from tkinter import messagebox
-import projeto_saldo_st
+
 
 class Single_window(tk.Tk):
     def __init__(self):
@@ -14,6 +14,9 @@ class Single_window(tk.Tk):
 
 def mensagem_exporta():
     messagebox.showinfo("Exportar para Excel", "Planilhas Geradas com Sucesso !")
+
+def mensagem_exclui():
+    messagebox.showinfo("Exclusão", "Dados Excluídos com Sucesso!")
 
 def mensagem_importa():
     messagebox.showinfo("Importação", "Planilha importada com Sucesso !!")
@@ -44,7 +47,7 @@ msg2 = "Importar Relatorio Entradas"
 msg3 = "Exportar Template Entradas"
 msg30 = "Exportar Template Saidas"
 msg4 = "Exportar Saldo Atualizado"
-msg5 = f"Importar Relatorio \n Devoluções"
+msg5 = f"Exclui Dados de Entradas"
 
 button_f1 = tk.Frame(root)
 button_4 = Button(button_f1, text = f"IRE \n \n {msg2}", bg="#95c45c",width=21, pady=60,padx=10, border=2,font='arial 16')
@@ -62,9 +65,9 @@ button_f1.pack(side = 'top')
 space_6 = PanedWindow(button_f1,width=100,background="#cacbd2")
 space_6.grid(row=1, column=3, columnspan=1)
 
-button_20 = Button(button_f1, text = f"IRD \n \n {msg5}", bg="#95c45c",width=21, pady=48,padx=10, border=2,font='arial 16')
+button_20 = Button(button_f1, text = f"EDI \n \n {msg5}", bg="#f44e3f",width=21, pady=60,padx=10, border=2,font='arial 16')
 button_20.grid(row=1, column=4)
-button_20["command"] = lambda:[projeto_saldo_st.importa_devolucoes(),mensagem_importa()]
+button_20["command"] = lambda:[projeto_saldo_st.exclui_dados_entradas(),mensagem_exclui()]
 button_f1.pack(side = 'top')
 
 
@@ -92,24 +95,24 @@ button_f2.pack(side = 'top')
 
 
 
-button_f3 = tk.Frame(root)
-button_10 = Button(button_f3, text = '\n IRT \n',bg="#ab91bd",width=21, pady=60,padx=10, border=2,font='arial 16')
-button_10.grid(row=4, column=0)
-button_10["command"] = mensagem_exporta
-
-space_3 = PanedWindow(button_f3,width=100,height=30,background="#cacbd2")
-space_3.grid(row=3, column=1, columnspan=1)
-
-button_11 = Button(button_f3, text = '\n IRC \n ',bg="#ab91bd",width=21, pady=60,padx=10, border=2,font='arial 16')
-button_11.grid(row=4, column=2)
-button_f3.pack(side = 'top')
-
-space_3 = PanedWindow(button_f3,width=100,height=30,background="#cacbd2")
-space_3.grid(row=3, column=3,)
-
-button_11 = Button(button_f3, text = '\n IRC \n ',bg="#ab91bd",width=21, pady=60,padx=10, border=2,font='arial 16')
-button_11.grid(row=4, column=4)
-button_f3.pack(side = 'top')
+# button_f3 = tk.Frame(root)
+# button_10 = Button(button_f3, text = '\n IRT \n',bg="#ab91bd",width=21, pady=60,padx=10, border=2,font='arial 16')
+# button_10.grid(row=4, column=0)
+# button_10["command"] = mensagem_exporta
+#
+# space_3 = PanedWindow(button_f3,width=100,height=30,background="#cacbd2")
+# space_3.grid(row=3, column=1, columnspan=1)
+#
+# button_11 = Button(button_f3, text = '\n IRC \n ',bg="#ab91bd",width=21, pady=60,padx=10, border=2,font='arial 16')
+# button_11.grid(row=4, column=2)
+# button_f3.pack(side = 'top')
+#
+# space_3 = PanedWindow(button_f3,width=100,height=30,background="#cacbd2")
+# space_3.grid(row=3, column=3,)
+#
+# button_11 = Button(button_f3, text = '\n IRC \n ',bg="#ab91bd",width=21, pady=60,padx=10, border=2,font='arial 16')
+# button_11.grid(row=4, column=4)
+# button_f3.pack(side = 'top')
 
 
 title_app10 = tk.Frame(root)
@@ -145,7 +148,7 @@ button_f4.pack(side = 'bottom')
 
 button_f1.configure(background="#cacbd2")
 button_f2.configure(background="#cacbd2")
-button_f3.configure(background="#cacbd2")
+#button_f3.configure(background="#cacbd2")
 
 
 

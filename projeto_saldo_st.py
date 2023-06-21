@@ -1,56 +1,83 @@
 import sqlite3
 import pandas as pd
-#import xlsxwriter
-import time
 from tkinter import filedialog
+import os
+import logging
 
-cxn = sqlite3.connect(r'X:\CONTROLADORIA\COMPLIANCE FISCAL\APURAÇÃO & CONCILIAÇÃO FISCAL\CONTROLES\Saldos Contábeis\MR22\bd_saldo_icmsst.db')
+caminho = r"C:\temp"
+if not(os.path.exists(caminho)):
+    os.mkdir(caminho)
+else:
+    pass
+
+logging.basicConfig(filename=r'C:\temp\logfile.log', level=logging.DEBUG,
+                    format='%(asctime)s - %(levelname)s - %(message)s')
+
+
+cxn = sqlite3.connect(r'C:\TEMP\bd_saldo_icmsst.db')
 cursor = cxn.cursor()
 
 
 def importa_saidas():
-    filename_saida = filedialog.askopenfilename(initialdir="/home", title="Select a File",
-                                          filetypes=(("Text files", "*.*"), ("all files", "*.*")))
-    print("Importanto Planilhas")
-    wb1 = pd.read_excel(filename_saida, sheet_name='Análise 1')
-    wb1.to_sql(name='SAIDAS_3C', con=cxn, if_exists='append', index=False)
+    try:
+        filename_saida = filedialog.askopenfilename(initialdir="/home", title="Select a File",
+                                              filetypes=(("Text files", "*.*"), ("all files", "*.*")))
+        print("Importanto Planilhas")
+        wb1 = pd.read_excel(filename_saida, sheet_name='Análise 1')
+        wb1.to_sql(name='SAIDAS_3C', con=cxn, if_exists='append', index=False)
+        cxn.commit()
+        cxn.close()
+        logging.info('Arquivo de saida importado no sistema')
+
+    except Exception as e:
+        logging.error(str(e), exc_info=True)
 
 def importa_entradas():
-    filename_entrada = filedialog.askopenfilename(initialdir="/home", title="Select a File",
-                                          filetypes=(("Text files", "*.*"), ("all files", "*.*")))
+    try:
+        filename_entrada = filedialog.askopenfilename(initialdir="/home", title="Select a File",
+                                              filetypes=(("Text files", "*.*"), ("all files", "*.*")))
 
-    wb2 = pd.read_excel(filename_entrada, sheet_name='Entradas')
-    wb2.to_sql(name='ENTRADAS_3C', con=cxn, if_exists='append', index=False)
+        wb2 = pd.read_excel(filename_entrada, sheet_name='Entradas')
+        wb2.to_sql(name='ENTRADAS_3C', con=cxn, if_exists='append', index=False)
 
-    wb3 = pd.read_excel(r'C:\Users\abimaelsoares\Desktop\projeto_saldost\Entradas 02.2023.xlsx', sheet_name='Saldo Anterior')
-    wb3.to_sql(name='SALDO_ANTERIOR', con=cxn, if_exists='append', index=False)
+        wb3 = pd.read_excel(r'C:\Users\abimaelsoares\Desktop\projeto_saldost\Entradas 02.2023.xlsx', sheet_name='Saldo Anterior')
+        wb3.to_sql(name='SALDO_ANTERIOR', con=cxn, if_exists='append', index=False)
+        logging.info('Arquivo de entrada importado no sistema')
 
-    cxn.commit()
+        cxn.commit()
+        cxn.close()
 
-def importa_devolucoes():
-    filename_entrada = filedialog.askopenfilename(initialdir="/home", title="Select a File",
-                                                      filetypes=(("Text files", "*.*"), ("all files", "*.*")))
+    except Exception as e:
+        logging.error(str(e), exc_info=True)
 
-    wb2 = pd.read_excel(filename_entrada, sheet_name='Devolucoes')
-    wb2.to_sql(name='DEVOLUCOES_3C', con=cxn, if_exists='append', index=False)
-
-def importa_ressarcimento_TIMP():
-    filename_ressarcimento_timp = filedialog.askopenfilename(initialdir="/home", title="Select a File",
-                                          filetypes=(("Text files", "*.*"), ("all files", "*.*")))
-    wb4 = pd.read_excel(filename_ressarcimento_timp)
-    wb4.to_sql(name="RESS_TIMP", con=cxn, if_exists='append', index=False)
+def exclui_dados_entradas():
+    try:
+        cursor.execute(("DELETE FROM ENTRADAS_3C"))
+        cxn.commit()
+        cxn.close()
+        logging.info('Arquivo de entrada excluido do sistema')
+    except Exception as e:
+        logging.error(str(e), exc_info=True)
 
 def saldo_atual_provisorio():
-    print("Calculando ST e Saldo total das entradas")
-    cursor.execute("""CREATE table saldo_atual_provisorio AS SELECT Empresa, Centro, Divisão, Material, "Descrição Material" as Descricao_Material,
-    UM, SUM("Saldo Qtd") as Saldo_Qtd, SUM("ICMS ST Total Atualizado" + "Valor ICMS") AS total_st_bruto_atualizado, (SUM("ICMS ST Total Atualizado" + "Valor ICMS")/SUM("Saldo Qtd")) as Valor_unit_ST
-        
-    FROM(
-	SELECT Empresa, Centro, Divisão, Material, "Descrição Material",UM,"ICMS ST Total Atualizado", "Saldo Qtd","Valor ICMS"  FROM SALDO_ANTERIOR
-		UNION ALL
-	SELECT Empresa, Centro, Divisão, Material, "Descrição Material",UM,"Valor ICMS ST", Quantidade, "Valor ICMS" FROM ENTRADAS_3C  WHERE TIPO = "CALCULADO NA ENTRADA" OR "DESTACADO NA NF"
-	) AS Total
-    GROUP BY Material, Empresa, Centro, "Divisão" """)
+    try:
+        cursor.execute("""CREATE table saldo_atual_provisorio AS SELECT Empresa, Centro, Divisão, Material, "Descrição Material" as Descricao_Material,
+        UM, SUM("Saldo Qtd") as Saldo_Qtd, SUM("ICMS ST Total Atualizado" + "Valor ICMS") AS total_st_bruto_atualizado, (SUM("ICMS ST Total Atualizado" + "Valor ICMS")/SUM("Saldo Qtd")) as Valor_unit_ST
+            
+        FROM(
+        SELECT Empresa, Centro, Divisão, Material, "Descrição Material",UM,"ICMS ST Total Atualizado", "Saldo Qtd","Valor ICMS"  FROM SALDO_ANTERIOR
+            UNION ALL
+        SELECT Empresa, Centro, Divisão, Material, "Descrição Material",UM,"Valor ICMS ST", Quantidade, "Valor ICMS" FROM ENTRADAS_3C  WHERE TIPO = "CALCULADO NA ENTRADA" OR "DESTACADO NA NF"
+        ) AS Total
+        GROUP BY Material, Empresa, Centro, "Divisão" """)
+        logging.info('saldo_atual_provisorio criado')
+        cxn.commit()
+        cxn.close()
+    except Exception as e:
+        logging.error(str(e), exc_info=True)
+
+
+
 
 def criar_coluna_tipo_contabilizacao_saidas():
     cursor.execute("""ALTER TABLE SAIDAS_3C ADD COLUMN tipo_contabilizacao""")
@@ -159,18 +186,11 @@ if __name__ == "__main__":
     # criar_coluna_tipo_contabilizacao_saidas()
     # saldo_atual_provisorio()
     # sintetiza_dados()
-    saldo_consistido()
+    # saldo_consistido()
     # planilha_modelo_template_entradas()
     # planilha_modelo_template_saidas()
-    exportar_saldo_atual()
+    #exportar_saldo_atual()
     # importa_ressarcimento_TIMP()
     cxn.close
 
 
-#### parametrizar id saidas
-#### conferir e definir layouts finais
-#### cabeçalho dos relatorios
-#### mensagens de erro
-#### barra de progresso
-
-#### alterar id das saidas para 8 ou 9
