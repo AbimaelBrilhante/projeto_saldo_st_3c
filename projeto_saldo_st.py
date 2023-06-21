@@ -59,6 +59,15 @@ def exclui_dados_entradas():
     except Exception as e:
         logging.error(str(e), exc_info=True)
 
+def exclui_dados_saidas():
+    try:
+        cursor.execute(("DELETE FROM SAIDAS_3C"))
+        cxn.commit()
+        cxn.close()
+        logging.info('Arquivo de saida excluido do sistema')
+    except Exception as e:
+        logging.error(str(e), exc_info=True)
+
 def saldo_atual_provisorio():
     try:
         cursor.execute("""CREATE table saldo_atual_provisorio AS SELECT Empresa, Centro, Divisão, Material, "Descrição Material" as Descricao_Material,
