@@ -4,26 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="09d18b57-e3c3-4b4b-958a-00386544fcf3" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/App.spec" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/build/App/Analysis-00.toc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/build/App/App.exe.manifest" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/build/App/App.pkg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/build/App/PKG-00.toc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/build/App/PYZ-00.pyz" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/build/App/PYZ-00.toc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/build/App/Tree-00.toc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/build/App/Tree-01.toc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/build/App/Tree-02.toc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/build/App/base_library.zip" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/build/App/warn-App.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/build/App/xref-App.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/App.exe" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/App.py" beforeDir="false" afterPath="$PROJECT_DIR$/App.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/analise-dados.py" beforeDir="false" afterPath="$PROJECT_DIR$/analise-dados.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/projeto_saldo_st.py" beforeDir="false" afterPath="$PROJECT_DIR$/projeto_saldo_st.py" afterDir="false" />
-    </list>
+    <list default="true" id="09d18b57-e3c3-4b4b-958a-00386544fcf3" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -346,7 +327,21 @@
       <option name="project" value="LOCAL" />
       <updated>1680345725637</updated>
     </task>
-    <option name="localTasksCounter" value="20" />
+    <task id="LOCAL-00020" summary="update">
+      <created>1687378137935</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1687378137935</updated>
+    </task>
+    <task id="LOCAL-00021" summary="update">
+      <created>1687378218588</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1687378218588</updated>
+    </task>
+    <option name="localTasksCounter" value="22" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
