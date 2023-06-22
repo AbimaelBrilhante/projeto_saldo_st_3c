@@ -1,23 +1,25 @@
 import sqlite3
 import pandas as pd
-from tkinter import filedialog
+from tkinter import filedialog, simpledialog
 import os
 import logging
+from pathlib import Path
+import openpyxl
 
 caminho = r"C:\temp"
 if not(os.path.exists(caminho)):
     os.mkdir(caminho)
-else:
-    pass
 
 logging.basicConfig(filename=r'C:\temp\logfile.log', level=logging.DEBUG,
                     format='%(asctime)s - %(levelname)s - %(message)s')
 
 
 cxn = sqlite3.connect(r'C:\TEMP\bd_saldo_icmsst.db')
+cxn_consolidado = sqlite3.connect(r'X:\CONTROLADORIA\COMPLIANCE FISCAL\APURAÇÃO & CONCILIAÇÃO FISCAL\CONTROLES\Saldos Contábeis\MR22\bd_saldo_icmsst.db')
 cursor = cxn.cursor()
+cursor_consolidado = cxn_consolidado.cursor()
 
-
+## IMPORTAÇÃO ##
 def importa_saidas():
     try:
         filename_saida = filedialog.askopenfilename(initialdir="/home", title="Select a File",
@@ -26,12 +28,10 @@ def importa_saidas():
         wb1 = pd.read_excel(filename_saida, sheet_name='Análise 1')
         wb1.to_sql(name='SAIDAS_3C', con=cxn, if_exists='append', index=False)
         cxn.commit()
-        cxn.close()
         logging.info('Arquivo de saida importado no sistema')
 
     except Exception as e:
         logging.error(str(e), exc_info=True)
-
 def importa_entradas():
     try:
         filename_entrada = filedialog.askopenfilename(initialdir="/home", title="Select a File",
@@ -40,25 +40,33 @@ def importa_entradas():
         wb2 = pd.read_excel(filename_entrada, sheet_name='Entradas')
         wb2.to_sql(name='ENTRADAS_3C', con=cxn, if_exists='append', index=False)
 
-        wb3 = pd.read_excel(r'C:\Users\abimaelsoares\Desktop\projeto_saldost\Entradas 02.2023.xlsx', sheet_name='Saldo Anterior')
-        wb3.to_sql(name='SALDO_ANTERIOR', con=cxn, if_exists='append', index=False)
+        wb3 = pd.read_excel(filename_entrada, sheet_name='Entradas')
+        wb3.to_sql(name='ENTRADAS_3C', con=cxn_consolidado, if_exists='append', index=False)
+
+        wb4 = pd.read_excel(r'C:\Users\abimaelsoares\Desktop\projeto_saldost\Entradas 02.2023.xlsx', sheet_name='Saldo Anterior')
+        wb4.to_sql(name='SALDO_ANTERIOR', con=cxn, if_exists='append', index=False)
         logging.info('Arquivo de entrada importado no sistema')
 
         cxn.commit()
-        cxn.close()
+        #cxn.close()
 
     except Exception as e:
         logging.error(str(e), exc_info=True)
 
+## EXCLUSÃO ##
 def exclui_dados_entradas():
+    entrada_filial = simpledialog.askstring("Entrada", "Digite o Centro:")
     try:
-        cursor.execute(("DELETE FROM ENTRADAS_3C"))
+        cursor.execute((f"DELETE FROM ENTRADAS_3C WHERE Centro = {entrada_filial}"))
+        cursor_consolidado.execute((f"DELETE FROM ENTRADAS_3C WHERE Centro = {entrada_filial}"))
         cxn.commit()
-        cxn.close()
-        logging.info('Arquivo de entrada excluido do sistema')
+        cxn_consolidado.commit()
+        logging.info(f'Arquivo de entrada da filial {entrada_filial} excluido do sistema')
+        caminho_arquivo = Path(r"C:\TEMP\planilha_modelo_template_entradas.xlsx")
+        if caminho_arquivo.exists():
+            caminho_arquivo.unlink()
     except Exception as e:
         logging.error(str(e), exc_info=True)
-
 def exclui_dados_saidas():
     try:
         cursor.execute(("DELETE FROM SAIDAS_3C"))
@@ -68,11 +76,85 @@ def exclui_dados_saidas():
     except Exception as e:
         logging.error(str(e), exc_info=True)
 
+## EXPORTAÇÃO ##
+def planilha_modelo_template_entradas():
+    try:
+        try:
+            cursor.execute("""CREATE table modelo_template_entradas AS SELECT "ID do Cenário", "Data Lançamento", "Material", 
+            "Tipo de Avaliação","Docnum", "Empresa","Centro","Divisão","Valor ICMS","Valor ICMS ST",
+            "Valor IPI" FROM ENTRADAS_3C WHERE TIPO <> "DESTACADO NA NF" """)
+            cxn.commit()
+            df = pd.read_sql("select * from modelo_template_entradas", cxn)
+            df.to_excel(r"C:\TEMP\planilha_modelo_template_entradas.xlsx", index=False)
+            logging.info('planilha template entradas exportada')
+            transforma_dados()
+
+        except:
+            df = pd.read_sql("select * from modelo_template_entradas", cxn)
+            df.to_excel(r"C:\TEMP\planilha_modelo_template_entradas.xlsx", index=False)
+            logging.info('planilha template entradas exportada')
+            transforma_dados()
+    except Exception as e:
+        logging.error(str(e), exc_info=True)
+def planilha_modelo_template_saidas():
+    try:
+        try:
+            cursor.execute("""CREATE table modelo_template_saidas AS select substring(CFOP1,1,1)
+            as "ID do Cenário", "Data de Lançamento",Material1,"Tipo de Avaliação1",Docnum1,Empresa1,
+            Centro1,"Divisão1","",total_st_entrada,"IPI1", "tipo_contabilizacao" FROM saidas_sinteticas ORDER BY "tipo_contabilizacao" """)
+            cxn.commit()
+            df = pd.read_sql("select * from modelo_template_saidas", cxn)
+            df.to_excel("planilha_modelo_template_saidas.xlsx", index=False)
+
+            cursor.execute("""CREATE table modelo_template_devolucoes AS select "10"
+            as "ID do Cenário", "Data Lançamento99",Material99,"Tipo de Avaliação99",Docnum99,Empresa99,
+            Centro99,"Divisão99","",total_st_entrada,"Valor IPI99" FROM devolucoes_sinteticas """)
+            # ICMS1 // Valor ICMS99
+            cxn.commit()
+            df2 = pd.read_sql("select * from modelo_template_devolucoes", cxn)
+            df2.to_excel("planilha_modelo_template_devolucoes.xlsx", index=False)
+            #cxn.close()
+
+        except:
+            pass
+            df = pd.read_sql("select * from modelo_template_saidas", cxn)
+            df.to_excel("planilha_modelo_template_saidas.xlsx", index=False)
+
+            df2 = pd.read_sql("select * from modelo_template_devolucoes", cxn)
+            df2.to_excel("planilha_modelo_template_devolucoes.xlsx", index=False)
+            #cxn.close()
+    except Exception as e:
+        logging.error(str(e), exc_info=True)
+
+
+def transforma_dados():
+
+    arquivo_entrada = r"C:\TEMP\planilha_modelo_template_entradas.xlsx"
+    workbook = openpyxl.load_workbook(arquivo_entrada)
+    nome_planilha = 'Sheet1'
+    planilha = workbook[nome_planilha]
+
+    novo_cabecalho = ["CodigoCenario","Data","Material","TipoAvaliacao","Docnum","Empresa","CodigoCentro","Divisao","ValorICMS","ValorICMSST","ValorIPI"]
+    planilha['A1'].value = novo_cabecalho[0]
+    planilha['B1'].value = novo_cabecalho[1]
+    planilha['C1'].value = novo_cabecalho[2]
+    planilha['D1'].value = novo_cabecalho[3]
+    planilha['E1'].value = novo_cabecalho[4]
+    planilha['F1'].value = novo_cabecalho[5]
+    planilha['G1'].value = novo_cabecalho[6]
+    planilha['H1'].value = novo_cabecalho[7]
+    planilha['I1'].value = novo_cabecalho[8]
+    planilha['J1'].value = novo_cabecalho[9]
+    planilha['K1'].value = novo_cabecalho[10]
+
+
+    workbook.save(arquivo_entrada)
+
 def saldo_atual_provisorio():
     try:
         cursor.execute("""CREATE table saldo_atual_provisorio AS SELECT Empresa, Centro, Divisão, Material, "Descrição Material" as Descricao_Material,
         UM, SUM("Saldo Qtd") as Saldo_Qtd, SUM("ICMS ST Total Atualizado" + "Valor ICMS") AS total_st_bruto_atualizado, (SUM("ICMS ST Total Atualizado" + "Valor ICMS")/SUM("Saldo Qtd")) as Valor_unit_ST
-            
+
         FROM(
         SELECT Empresa, Centro, Divisão, Material, "Descrição Material",UM,"ICMS ST Total Atualizado", "Saldo Qtd","Valor ICMS"  FROM SALDO_ANTERIOR
             UNION ALL
@@ -81,12 +163,11 @@ def saldo_atual_provisorio():
         GROUP BY Material, Empresa, Centro, "Divisão" """)
         logging.info('saldo_atual_provisorio criado')
         cxn.commit()
-        cxn.close()
+        #cxn.close()
     except Exception as e:
         logging.error(str(e), exc_info=True)
 
-
-
+## adicionar logs ##
 
 def criar_coluna_tipo_contabilizacao_saidas():
     cursor.execute("""ALTER TABLE SAIDAS_3C ADD COLUMN tipo_contabilizacao""")
@@ -119,47 +200,6 @@ def sintetiza_dados_devolucoes():
     INNER JOIN DEVOLUCOES_3C ON saldo_atual_provisorio.Material = DEVOLUCOES_3C.Material99 AND
     saldo_atual_provisorio.Empresa = DEVOLUCOES_3C.Empresa99 AND saldo_atual_provisorio.Centro = DEVOLUCOES_3C.Centro99
     GROUP BY Docnum99,Material99,Empresa99,Centro99,CFOP99,"Tipo de Avaliação99" """)
-
-def planilha_modelo_template_entradas():
-    print("Gerando planilha Template")
-    try:
-        cursor.execute("""CREATE table modelo_template_entradas AS SELECT "ID do Cenário", "Data Lançamento", "Material", 
-        "Tipo de Avaliação","Docnum", "Empresa","Centro","Divisão","Valor ICMS","Valor ICMS ST",
-        "Valor IPI" FROM ENTRADAS_3C WHERE TIPO <> "DESTACADO NA NF" """)
-        cxn.commit()
-        df = pd.read_sql("select * from modelo_template_entradas", cxn)
-        #df.to_excel("planilha_modelo_template_entradas.xlsx", index=False)
-        df.to_excel(r"C:\TEMP\planilha_modelo_template_entradas.xlsx", index=False)
-
-    except:
-        df = pd.read_sql("select * from modelo_template_entradas", cxn)
-        df.to_excel(r"C:\TEMP\planilha_modelo_template_entradas.xlsx", index=False)
-
-def planilha_modelo_template_saidas():
-    print("Gerando planilha Template")
-    try:
-        cursor.execute("""CREATE table modelo_template_saidas AS select substring(CFOP1,1,1)
-        as "ID do Cenário", "Data de Lançamento",Material1,"Tipo de Avaliação1",Docnum1,Empresa1,
-        Centro1,"Divisão1","",total_st_entrada,"IPI1", "tipo_contabilizacao" FROM saidas_sinteticas ORDER BY "tipo_contabilizacao" """)
-        cxn.commit()
-        df = pd.read_sql("select * from modelo_template_saidas", cxn)
-        df.to_excel("planilha_modelo_template_saidas.xlsx", index=False)
-
-        cursor.execute("""CREATE table modelo_template_devolucoes AS select "10"
-        as "ID do Cenário", "Data Lançamento99",Material99,"Tipo de Avaliação99",Docnum99,Empresa99,
-        Centro99,"Divisão99","",total_st_entrada,"Valor IPI99" FROM devolucoes_sinteticas """)
-        #ICMS1 // Valor ICMS99
-        cxn.commit()
-        df2 = pd.read_sql("select * from modelo_template_devolucoes", cxn)
-        df2.to_excel("planilha_modelo_template_devolucoes.xlsx", index=False)
-
-    except:
-        pass
-        df = pd.read_sql("select * from modelo_template_saidas", cxn)
-        df.to_excel("planilha_modelo_template_saidas.xlsx", index=False)
-
-        df2 = pd.read_sql("select * from modelo_template_devolucoes", cxn)
-        df2.to_excel("planilha_modelo_template_devolucoes.xlsx", index=False)
 
 def saldo_consistido():
     print("Consolidando Saldo Atual")
@@ -197,9 +237,12 @@ if __name__ == "__main__":
     # sintetiza_dados()
     # saldo_consistido()
     # planilha_modelo_template_entradas()
+    # transforma_dados()
     # planilha_modelo_template_saidas()
-    #exportar_saldo_atual()
+    # exportar_saldo_atual()
     # importa_ressarcimento_TIMP()
+    exclui_dados_entradas()
     cxn.close
+    cxn_consolidado.close
 
 

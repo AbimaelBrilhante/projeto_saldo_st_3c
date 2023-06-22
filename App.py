@@ -19,6 +19,9 @@ def mensagem_importa():
 def mensagem_processamento():
     messagebox.showinfo("Processado !", "Dados processados com sucesso !!")
 
+
+### ESTRUTURA SUPERIOR ###
+
 root = Single_window()
 title_app = tk.Frame(root)
 space_0 = ttk.Label(title_app,text="\n                                                                     "
@@ -30,11 +33,6 @@ space_0 = ttk.Label(title_app,text="\n                                          
 space_0.grid(row=0,column=0)
 title_app.pack(side = 'top')
 
-
-title_app = tk.Frame(root)
-space_0 = ttk.Label(title_app,text="",width=6007, padding=1, font= "Arial 12")
-space_0.grid(row=0,column=0)
-title_app.pack(side = 'top')
 
 title_app = tk.Frame(root)
 space_001 = ttk.Label(title_app,text="",width=6007, padding=1, font= "Arial 12", foreground='black',background='#cacbd2')
