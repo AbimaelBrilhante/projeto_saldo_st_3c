@@ -61,7 +61,7 @@
       <recent name="C:\Users\abimaelsoares\Documents\projeto_saldo_st_3c" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.App">
+  <component name="RunManager" selected="Python.projeto_saldo_st">
     <configuration name="App" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="projeto_saldo_st_3c" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -190,8 +190,8 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.App" />
         <item itemvalue="Python.projeto_saldo_st" />
+        <item itemvalue="Python.App" />
         <item itemvalue="Python.analise-dados" />
         <item itemvalue="Python.relatorio_nfs_xml" />
         <item itemvalue="Python.common" />
@@ -368,7 +368,14 @@
       <option name="project" value="LOCAL" />
       <updated>1687380626371</updated>
     </task>
-    <option name="localTasksCounter" value="24" />
+    <task id="LOCAL-00024" summary="update">
+      <created>1687456486079</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1687456486079</updated>
+    </task>
+    <option name="localTasksCounter" value="25" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">

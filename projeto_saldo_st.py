@@ -24,10 +24,9 @@ def importa_saidas():
     try:
         filename_saida = filedialog.askopenfilename(initialdir="/home", title="Select a File",
                                               filetypes=(("Text files", "*.*"), ("all files", "*.*")))
-        print("Importanto Planilhas")
         wb1 = pd.read_excel(filename_saida, sheet_name='Análise 1')
-        wb1.to_sql(name='SAIDAS_3C', con=cxn, if_exists='append', index=False)
-        cxn.commit()
+        wb1.to_sql(name='SAIDAS_3C', con=cxn_consolidado, if_exists='append', index=False)
+        cxn_consolidado.commit()
         logging.info('Arquivo de saida importado no sistema')
 
     except Exception as e:
@@ -56,12 +55,14 @@ def importa_entradas():
 ## EXCLUSÃO ##
 def exclui_dados_entradas():
     entrada_filial = simpledialog.askstring("Entrada", "Digite o Centro:")
+    entrada_periodo = simpledialog.askstring("Entrada", "Digite o Periodo:")
+    entrada_ano = simpledialog.askstring("Entrada", "Digite o Ano:")
     try:
-        cursor.execute((f"DELETE FROM ENTRADAS_3C WHERE Centro = {entrada_filial}"))
-        cursor_consolidado.execute((f"DELETE FROM ENTRADAS_3C WHERE Centro = {entrada_filial}"))
+        cursor.execute((f"DELETE FROM ENTRADAS_3C WHERE Centro = {entrada_filial} AND PERÍODO = {entrada_periodo} AND ANO = {entrada_ano}"))
+        cursor_consolidado.execute((f"DELETE FROM ENTRADAS_3C WHERE Centro = {entrada_filial} AND PERÍODO = {entrada_periodo} AND ANO = {entrada_ano}"))
         cxn.commit()
         cxn_consolidado.commit()
-        logging.info(f'Arquivo de entrada da filial {entrada_filial} excluido do sistema')
+        logging.info(f'Arquivo de entrada da filial {entrada_filial} do período {entrada_periodo} e do ano {entrada_ano} foi excluido do sistema')
         caminho_arquivo = Path(r"C:\TEMP\planilha_modelo_template_entradas.xlsx")
         if caminho_arquivo.exists():
             caminho_arquivo.unlink()
@@ -99,30 +100,41 @@ def planilha_modelo_template_entradas():
 def planilha_modelo_template_saidas():
     try:
         try:
-            cursor.execute("""CREATE table modelo_template_saidas AS select substring(CFOP1,1,1)
-            as "ID do Cenário", "Data de Lançamento",Material1,"Tipo de Avaliação1",Docnum1,Empresa1,
-            Centro1,"Divisão1","",total_st_entrada,"IPI1", "tipo_contabilizacao" FROM saidas_sinteticas ORDER BY "tipo_contabilizacao" """)
-            cxn.commit()
-            df = pd.read_sql("select * from modelo_template_saidas", cxn)
-            df.to_excel("planilha_modelo_template_saidas.xlsx", index=False)
+            cursor_consolidado.execute("""CREATE table modelo_template_saidas AS select 
+	CASE
+		WHEN substring(CFOP1,1,1)="5" THEN "04 - Saída Interna"
+		ELSE "05 - Ressarcimento ICMS"
+    END AS  "CodigoCenario", "Data de Lançamento" as "Data",Material1 as "Material","Tipo de Avaliação1" as "TipoAvaliacao",
+	CASE
+		WHEN CFOP1 = "6152" THEN ""
+		WHEN CFOP1 = "5152" THEN ""
+		WHEN CFOP1 = "5409" THEN ""
+		WHEN CFOP1 = "6409" THEN ""
+		ELSE Docnum1
+		END AS Docnum,Empresa1 as "Empresa",Centro1 as "CodigoCentro","Divisão" as "Divisao",total_st_entrada as "ValorIcms",ICMS1 as "ValorICMSST","IPI1" AS "ValorIPI" 
+		FROM saidas_sinteticas ORDER BY "tipo_contabilizacao" """)
+            cxn_consolidado.commit()
+            df = pd.read_sql("select * from modelo_template_saidas", cxn_consolidado)
+            df.to_excel("C:\TEMP\planilha_modelo_template_saidas.xlsx", index=False)
+            logging.info('planilha template saidas exportada')
 
-            cursor.execute("""CREATE table modelo_template_devolucoes AS select "10"
-            as "ID do Cenário", "Data Lançamento99",Material99,"Tipo de Avaliação99",Docnum99,Empresa99,
-            Centro99,"Divisão99","",total_st_entrada,"Valor IPI99" FROM devolucoes_sinteticas """)
-            # ICMS1 // Valor ICMS99
-            cxn.commit()
-            df2 = pd.read_sql("select * from modelo_template_devolucoes", cxn)
-            df2.to_excel("planilha_modelo_template_devolucoes.xlsx", index=False)
+            # cursor.execute("""CREATE table modelo_template_devolucoes AS select "10"
+            # as "ID do Cenário", "Data Lançamento99",Material99,"Tipo de Avaliação99",Docnum99,Empresa99,
+            # Centro99,"Divisão99","",total_st_entrada,"Valor IPI99" FROM devolucoes_sinteticas """)
+            # cxn_consolidado.commit()
+            # df2 = pd.read_sql("select * from modelo_template_devolucoes", cxn)
+            # df2.to_excel("planilha_modelo_template_devolucoes.xlsx", index=False)
             #cxn.close()
 
         except:
             pass
-            df = pd.read_sql("select * from modelo_template_saidas", cxn)
-            df.to_excel("planilha_modelo_template_saidas.xlsx", index=False)
+            df = pd.read_sql("select * from modelo_template_saidas", cxn_consolidado)
+            df.to_excel("C:\TEMP\planilha_modelo_template_saidas.xlsx", index=False)
+            logging.info('planilha template saidas exportada no except')
 
-            df2 = pd.read_sql("select * from modelo_template_devolucoes", cxn)
-            df2.to_excel("planilha_modelo_template_devolucoes.xlsx", index=False)
-            #cxn.close()
+            # df2 = pd.read_sql("select * from modelo_template_devolucoes", cxn)
+            # df2.to_excel("planilha_modelo_template_devolucoes.xlsx", index=False)
+
     except Exception as e:
         logging.error(str(e), exc_info=True)
 
@@ -152,7 +164,7 @@ def transforma_dados():
 
 def saldo_atual_provisorio():
     try:
-        cursor.execute("""CREATE table saldo_atual_provisorio AS SELECT Empresa, Centro, Divisão, Material, "Descrição Material" as Descricao_Material,
+        cursor_consolidado.execute("""CREATE table saldo_atual_provisorio AS SELECT Empresa, Centro, Divisão, Material, "Descrição Material" as Descricao_Material,
         UM, SUM("Saldo Qtd") as Saldo_Qtd, SUM("ICMS ST Total Atualizado" + "Valor ICMS") AS total_st_bruto_atualizado, (SUM("ICMS ST Total Atualizado" + "Valor ICMS")/SUM("Saldo Qtd")) as Valor_unit_ST
 
         FROM(
@@ -162,19 +174,21 @@ def saldo_atual_provisorio():
         ) AS Total
         GROUP BY Material, Empresa, Centro, "Divisão" """)
         logging.info('saldo_atual_provisorio criado')
-        cxn.commit()
-        #cxn.close()
+        cxn_consolidado.commit()
     except Exception as e:
         logging.error(str(e), exc_info=True)
 
 ## adicionar logs ##
 
 def criar_coluna_tipo_contabilizacao_saidas():
-    cursor.execute("""ALTER TABLE SAIDAS_3C ADD COLUMN tipo_contabilizacao""")
-    tipo_contabilizacao_saidas()
+    try:
+        cursor_consolidado.execute("""ALTER TABLE SAIDAS_3C ADD COLUMN tipo_contabilizacao""")
+        tipo_contabilizacao_saidas()
+    except:
+        tipo_contabilizacao_saidas()
 
 def tipo_contabilizacao_saidas():
-    cursor.execute("""UPDATE SAIDAS_3C
+    cursor_consolidado.execute("""UPDATE SAIDAS_3C
 SET 
     tipo_contabilizacao = 
     CASE WHEN SUBSTRING(CFOP1, 1,1) = "5" THEN "SEM RESSARCIMENTO" 
@@ -184,47 +198,43 @@ SET
 	ELSE "COM RESSARCIMENTO" END""")
 
 def sintetiza_dados():
-    print("Calculando ST das entradas para as saidas")
-    cursor.execute("""CREATE TABLE saidas_sinteticas AS SELECT SUM(Quantidade1) as saldo_saidas,*, AVG(Valor_unit_ST) 
-    AS unit_st,(AVG(Valor_unit_ST))*(sum(Quantidade1)) as total_st_entrada 
-	FROM saldo_atual_provisorio
-    INNER JOIN SAIDAS_3C ON saldo_atual_provisorio.Material = SAIDAS_3C.Material1 AND
-    saldo_atual_provisorio.Empresa = SAIDAS_3C.Empresa1 AND saldo_atual_provisorio.Centro = SAIDAS_3C.Centro1
-    GROUP BY Docnum1,Material1,Empresa1,Centro1,CFOP1,"Tipo de Avaliação1" ,"tipo_contabilizacao" """)
-    cxn.commit()
-
-def sintetiza_dados_devolucoes():
-    cursor.execute("""CREATE TABLE devolucoes_sinteticas AS SELECT SUM(Quantidade99) as saldo_saidas,*, AVG(Valor_unit_ST) 
-    AS unit_st,(AVG(Valor_unit_ST))*(sum(Quantidade99)) as total_st_entrada 
-	FROM saldo_atual_provisorio
-    INNER JOIN DEVOLUCOES_3C ON saldo_atual_provisorio.Material = DEVOLUCOES_3C.Material99 AND
-    saldo_atual_provisorio.Empresa = DEVOLUCOES_3C.Empresa99 AND saldo_atual_provisorio.Centro = DEVOLUCOES_3C.Centro99
-    GROUP BY Docnum99,Material99,Empresa99,Centro99,CFOP99,"Tipo de Avaliação99" """)
+    try:
+        cursor_consolidado.execute("""CREATE TABLE saidas_sinteticas AS SELECT SUM(Quantidade1) as saldo_saidas,*, AVG(Valor_unit_ST) 
+        AS unit_st,(AVG(Valor_unit_ST))*(sum(Quantidade1)) as total_st_entrada 
+        FROM saldo_atual_provisorio
+        INNER JOIN SAIDAS_3C ON saldo_atual_provisorio.Material = SAIDAS_3C.Material1 AND
+        saldo_atual_provisorio.Empresa = SAIDAS_3C.Empresa1 AND saldo_atual_provisorio.Centro = SAIDAS_3C.Centro1
+        GROUP BY Docnum1,Material1,Empresa1,Centro1,CFOP1,"Tipo de Avaliação1" ,"tipo_contabilizacao" """)
+        cxn_consolidado.commit()
+    except Exception as e:
+        logging.error(str(e), exc_info=True)
 
 def saldo_consistido():
-    print("Consolidando Saldo Atual")
-    cursor.execute("""create table SALDO_ATUAL as select sap.Empresa, sap.Centro,sap.Divisão,
-    sap.Material,sap.Descricao_Material,sap.UM, (sap.Saldo_Qtd - sum(saldo_saidas)) AS "Saldo Qtd", 
-    avg(sap.total_st_bruto_atualizado) as "ICMS ST Total Atualizado",
-    AVG(sap.Valor_unit_ST) as "ICMS ST Unit Atualizado", "Valor ICMS"
-    from saldo_atual_provisorio sap
-    left join saidas_sinteticas on sap.Material = saidas_sinteticas.Material1 and sap.Empresa = saidas_sinteticas.Empresa and sap.Centro = saidas_sinteticas.Centro and sap."Divisão" = saidas_sinteticas.Divisão
-	
-    group by
-        sap.Material,sap.Empresa,sap.Centro, sap.Divisão""")
-    #exclui_saldo_provisorio()
+    try:
+        cursor_consolidado.execute("""create table SALDO_ATUAL as select sap.Empresa, sap.Centro,sap.Divisão,
+        sap.Material,sap.Descricao_Material,sap.UM, (sap.Saldo_Qtd - sum(saldo_saidas)) AS "Saldo Qtd", 
+        avg(sap.total_st_bruto_atualizado) as "ICMS ST Total Atualizado",
+        AVG(sap.Valor_unit_ST) as "ICMS ST Unit Atualizado", "Valor ICMS"
+        from saldo_atual_provisorio sap
+        left join saidas_sinteticas on sap.Material = saidas_sinteticas.Material1 and sap.Empresa = saidas_sinteticas.Empresa and sap.Centro = saidas_sinteticas.Centro and sap."Divisão" = saidas_sinteticas.Divisão
+        
+        group by
+            sap.Material,sap.Empresa,sap.Centro, sap.Divisão""")
+        #exclui_saldo_provisorio()
+    except:
+        pass
 
 def exclui_saldo_provisorio():
-    cursor.execute("""drop table saldo_atual_provisorio""")
+    cursor_consolidado.execute("""drop table saldo_atual_provisorio""")
 
 def exportar_saldo_atual():
     writer = pd.ExcelWriter('saldo_atual.xlsx', engine='xlsxwriter')
-    df = pd.read_sql("select * from SALDO_ATUAL", cxn)
+    df = pd.read_sql("select * from SALDO_ATUAL", cxn_consolidado)
     df.to_excel(writer, index=False, sheet_name="Saldo_atual_detalhado")
-    df2 = pd.read_sql("SELECT EMPRESA, 'Saldo Qtd', 'ICMS ST Total Atualizado' FROM SALDO_ATUAL GROUP BY EMPRESA", cxn)
+    df2 = pd.read_sql("SELECT EMPRESA, 'Saldo Qtd', 'ICMS ST Total Atualizado' FROM SALDO_ATUAL GROUP BY EMPRESA", cxn_consolidado)
     df2.to_excel(writer, index=False, sheet_name="saldo_atual_por_empresa")
     df3 = pd.read_sql(
-        "SELECT EMPRESA,Centro, 'Saldo Qtd', 'ICMS ST Total Atualizado' FROM SALDO_ATUAL GROUP BY Centro, EMPRESA", cxn)
+        "SELECT EMPRESA,Centro, 'Saldo Qtd', 'ICMS ST Total Atualizado' FROM SALDO_ATUAL GROUP BY Centro, EMPRESA", cxn_consolidado)
     df3.to_excel(writer, index=False, sheet_name="saldo_atual_por_filial")
     writer.save()
 
@@ -241,7 +251,7 @@ if __name__ == "__main__":
     # planilha_modelo_template_saidas()
     # exportar_saldo_atual()
     # importa_ressarcimento_TIMP()
-    exclui_dados_entradas()
+    # exclui_dados_entradas()
     cxn.close
     cxn_consolidado.close
 

@@ -124,7 +124,7 @@ button_f4 = tk.Frame(root)
 button_12 = Button(button_f4, text = 'Processar',bg="#a19f9f",width=15, pady=10,padx=20,font='arial 12 bold')
 button_12.grid(row=7, column=0)
 button_12['command'] = lambda:[projeto_saldo_st.criar_coluna_tipo_contabilizacao_saidas(), projeto_saldo_st.saldo_atual_provisorio(),
-                               projeto_saldo_st.sintetiza_dados(),projeto_saldo_st.sintetiza_dados_devolucoes()
+                               projeto_saldo_st.sintetiza_dados()
                                 ,projeto_saldo_st.saldo_consistido(),mensagem_processamento()]
 button_f4.pack(side = 'bottom')
 
