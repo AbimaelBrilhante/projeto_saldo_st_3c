@@ -5,19 +5,23 @@ import os
 import logging
 from pathlib import Path
 import openpyxl
+import xlsxwriter
 
-caminho = r"C:\temp"
-if not(os.path.exists(caminho)):
-    os.mkdir(caminho)
+try:
+    caminho = r"C:\temp"
+    if not(os.path.exists(caminho)):
+        os.mkdir(caminho)
 
-logging.basicConfig(filename=r'C:\temp\logfile.log', level=logging.DEBUG,
-                    format='%(asctime)s - %(levelname)s - %(message)s')
+    logging.basicConfig(filename=r'C:\temp\logfile.log', level=logging.DEBUG,
+                        format='%(asctime)s - %(levelname)s - %(message)s')
 
 
-cxn = sqlite3.connect(r'C:\TEMP\bd_saldo_icmsst.db')
-cxn_consolidado = sqlite3.connect(r'X:\CONTROLADORIA\COMPLIANCE FISCAL\APURAÇÃO & CONCILIAÇÃO FISCAL\CONTROLES\Saldos Contábeis\MR22\bd_saldo_icmsst.db')
-cursor = cxn.cursor()
-cursor_consolidado = cxn_consolidado.cursor()
+    cxn = sqlite3.connect(r'C:\TEMP\bd_saldo_icmsst.db')
+    cxn_consolidado = sqlite3.connect(r'X:\CONTROLADORIA\COMPLIANCE FISCAL\APURAÇÃO & CONCILIAÇÃO FISCAL\CONTROLES\Saldos Contábeis\MR22\bd_saldo_icmsst.db')
+    cursor = cxn.cursor()
+    cursor_consolidado = cxn_consolidado.cursor()
+except Exception as e:
+    logging.error(str(e), exc_info=True)
 
 ## IMPORTAÇÃO ##
 def importa_saidas():
@@ -68,22 +72,14 @@ def exclui_dados_entradas():
             caminho_arquivo.unlink()
     except Exception as e:
         logging.error(str(e), exc_info=True)
-def exclui_dados_saidas():
-    try:
-        cursor.execute(("DELETE FROM SAIDAS_3C"))
-        cxn.commit()
-        cxn.close()
-        logging.info('Arquivo de saida excluido do sistema')
-    except Exception as e:
-        logging.error(str(e), exc_info=True)
 
 ## EXPORTAÇÃO ##
 def planilha_modelo_template_entradas():
     try:
         try:
             cursor.execute("""CREATE table modelo_template_entradas AS SELECT "ID do Cenário", "Data Lançamento", "Material", 
-            "Tipo de Avaliação","Docnum", "Empresa","Centro","Divisão","Valor ICMS","Valor ICMS ST",
-            "Valor IPI" FROM ENTRADAS_3C WHERE TIPO <> "DESTACADO NA NF" """)
+            "Tipo de Avaliação","Docnum", "Empresa","Centro","Divisão", "Valor ICMS", CASE WHEN TIPO = "DESTACADO NA NF" THEN "Valor ICMS ST"=""  ELSE "Valor ICMS ST" end as "Valor ICMS ST",
+			"Valor IPI" FROM ENTRADAS_3C  """)
             cxn.commit()
             df = pd.read_sql("select * from modelo_template_entradas", cxn)
             df.to_excel(r"C:\TEMP\planilha_modelo_template_entradas.xlsx", index=False)
@@ -106,10 +102,10 @@ def planilha_modelo_template_saidas():
 		ELSE "05 - Ressarcimento ICMS"
     END AS  "CodigoCenario", "Data de Lançamento" as "Data",Material1 as "Material","Tipo de Avaliação1" as "TipoAvaliacao",
 	CASE
-		WHEN CFOP1 = "6152" THEN ""
-		WHEN CFOP1 = "5152" THEN ""
-		WHEN CFOP1 = "5409" THEN ""
-		WHEN CFOP1 = "6409" THEN ""
+		WHEN CFOP1 = '6152' THEN ''
+		WHEN CFOP1 = '5152' THEN ''
+		WHEN CFOP1 = '5409' THEN ''
+		WHEN CFOP1 = '6409' THEN ''
 		ELSE Docnum1
 		END AS Docnum,Empresa1 as "Empresa",Centro1 as "CodigoCentro","Divisão" as "Divisao",total_st_entrada as "ValorIcms",ICMS1 as "ValorICMSST","IPI1" AS "ValorIPI" 
 		FROM saidas_sinteticas ORDER BY "tipo_contabilizacao" """)
@@ -137,7 +133,21 @@ def planilha_modelo_template_saidas():
 
     except Exception as e:
         logging.error(str(e), exc_info=True)
+def exportar_saldo_atual():
+    try:
+        writer = pd.ExcelWriter('saldo_atual.xlsx', engine='xlsxwriter')
+        df = pd.read_sql("select * from SALDO_ATUAL", cxn_consolidado)
+        df.to_excel(writer, index=False, sheet_name="Saldo_atual_detalhado")
+        df2 = pd.read_sql("SELECT EMPRESA, 'Saldo Qtd', 'ICMS ST Total Atualizado' FROM SALDO_ATUAL GROUP BY EMPRESA", cxn_consolidado)
+        df2.to_excel(writer, index=False, sheet_name="saldo_atual_por_empresa")
+        df3 = pd.read_sql(
+            "SELECT EMPRESA,Centro, 'Saldo Qtd', 'ICMS ST Total Atualizado' FROM SALDO_ATUAL GROUP BY Centro, EMPRESA", cxn_consolidado)
+        df3.to_excel(writer, index=False, sheet_name="saldo_atual_por_filial")
+        writer.save()
+    except Exception as e:
+        logging.error(str(e), exc_info=True)
 
+## TRANSFORMAÇÃO E MODIFICAÇÃO ##
 
 def transforma_dados():
 
@@ -161,7 +171,21 @@ def transforma_dados():
 
 
     workbook.save(arquivo_entrada)
+def criar_coluna_tipo_contabilizacao_saidas():
+    try:
+        cursor_consolidado.execute("""ALTER TABLE SAIDAS_3C ADD COLUMN tipo_contabilizacao""")
+        tipo_contabilizacao_saidas()
+    except:
+        tipo_contabilizacao_saidas()
+def tipo_contabilizacao_saidas():
+    cursor_consolidado.execute("""UPDATE SAIDAS_3C
+    SET 
+        tipo_contabilizacao = 
+        CASE WHEN SUBSTRING(CFOP1, 1,1) = "5" THEN "SEM RESSARCIMENTO" 
+    	WHEN SUBSTRING(CFOP1, 1,4) = "6949" THEN "COM RESSARCIMENTO"
+    	WHEN SUBSTRING(CFOP1, 1,2) = "69" THEN "SEM RESSARCIMENTO"
 
+    	ELSE "COM RESSARCIMENTO" END""")
 def saldo_atual_provisorio():
     try:
         cursor_consolidado.execute("""CREATE table saldo_atual_provisorio AS SELECT Empresa, Centro, Divisão, Material, "Descrição Material" as Descricao_Material,
@@ -177,25 +201,10 @@ def saldo_atual_provisorio():
         cxn_consolidado.commit()
     except Exception as e:
         logging.error(str(e), exc_info=True)
+def exclui_saldo_provisorio():
+    cursor_consolidado.execute("""drop table saldo_atual_provisorio""")
 
 ## adicionar logs ##
-
-def criar_coluna_tipo_contabilizacao_saidas():
-    try:
-        cursor_consolidado.execute("""ALTER TABLE SAIDAS_3C ADD COLUMN tipo_contabilizacao""")
-        tipo_contabilizacao_saidas()
-    except:
-        tipo_contabilizacao_saidas()
-
-def tipo_contabilizacao_saidas():
-    cursor_consolidado.execute("""UPDATE SAIDAS_3C
-SET 
-    tipo_contabilizacao = 
-    CASE WHEN SUBSTRING(CFOP1, 1,1) = "5" THEN "SEM RESSARCIMENTO" 
-	WHEN SUBSTRING(CFOP1, 1,4) = "6949" THEN "COM RESSARCIMENTO"
-	WHEN SUBSTRING(CFOP1, 1,2) = "69" THEN "SEM RESSARCIMENTO"
-
-	ELSE "COM RESSARCIMENTO" END""")
 
 def sintetiza_dados():
     try:
@@ -208,7 +217,6 @@ def sintetiza_dados():
         cxn_consolidado.commit()
     except Exception as e:
         logging.error(str(e), exc_info=True)
-
 def saldo_consistido():
     try:
         cursor_consolidado.execute("""create table SALDO_ATUAL as select sap.Empresa, sap.Centro,sap.Divisão,
@@ -223,20 +231,6 @@ def saldo_consistido():
         #exclui_saldo_provisorio()
     except:
         pass
-
-def exclui_saldo_provisorio():
-    cursor_consolidado.execute("""drop table saldo_atual_provisorio""")
-
-def exportar_saldo_atual():
-    writer = pd.ExcelWriter('saldo_atual.xlsx', engine='xlsxwriter')
-    df = pd.read_sql("select * from SALDO_ATUAL", cxn_consolidado)
-    df.to_excel(writer, index=False, sheet_name="Saldo_atual_detalhado")
-    df2 = pd.read_sql("SELECT EMPRESA, 'Saldo Qtd', 'ICMS ST Total Atualizado' FROM SALDO_ATUAL GROUP BY EMPRESA", cxn_consolidado)
-    df2.to_excel(writer, index=False, sheet_name="saldo_atual_por_empresa")
-    df3 = pd.read_sql(
-        "SELECT EMPRESA,Centro, 'Saldo Qtd', 'ICMS ST Total Atualizado' FROM SALDO_ATUAL GROUP BY Centro, EMPRESA", cxn_consolidado)
-    df3.to_excel(writer, index=False, sheet_name="saldo_atual_por_filial")
-    writer.save()
 
 if __name__ == "__main__":
     pass

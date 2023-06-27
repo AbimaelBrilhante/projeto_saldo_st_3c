@@ -5,17 +5,23 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="09d18b57-e3c3-4b4b-958a-00386544fcf3" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/icone.ico" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/obsoleto-App.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Anotações Cockpit - Banco de Impostos.txt" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/App.py" beforeDir="false" afterPath="$PROJECT_DIR$/App.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/App.spec" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/analise-dados.py" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/build/App/Analysis-00.toc" beforeDir="false" afterPath="$PROJECT_DIR$/build/App/Analysis-00.toc" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/build/App/App.pkg" beforeDir="false" afterPath="$PROJECT_DIR$/build/App/App.pkg" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/build/App/EXE-00.toc" beforeDir="false" afterPath="$PROJECT_DIR$/build/App/EXE-00.toc" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/build/App/PKG-00.toc" beforeDir="false" afterPath="$PROJECT_DIR$/build/App/PKG-00.toc" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/build/App/PYZ-00.pyz" beforeDir="false" afterPath="$PROJECT_DIR$/build/App/PYZ-00.pyz" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/App/PYZ-00.toc" beforeDir="false" afterPath="$PROJECT_DIR$/build/App/PYZ-00.toc" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/build/App/base_library.zip" beforeDir="false" afterPath="$PROJECT_DIR$/build/App/base_library.zip" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/build/App/warn-App.txt" beforeDir="false" afterPath="$PROJECT_DIR$/build/App/warn-App.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/build/App/xref-App.html" beforeDir="false" afterPath="$PROJECT_DIR$/build/App/xref-App.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/App.exe" beforeDir="false" afterPath="$PROJECT_DIR$/dist/App.exe" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/App.exe" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/projeto_saldo_st.py" beforeDir="false" afterPath="$PROJECT_DIR$/projeto_saldo_st.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -60,9 +66,12 @@
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\abimaelsoares\Documents\projeto_saldo_st_3c" />
     </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\abimaelsoares\Documents\projeto_saldo_st_3c" />
+    </key>
   </component>
-  <component name="RunManager" selected="Python.projeto_saldo_st">
-    <configuration name="App" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+  <component name="RunManager" selected="Python.App (1)">
+    <configuration name="App (1)" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="projeto_saldo_st_3c" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -104,7 +113,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="analise-dados" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="App" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="projeto_saldo_st_3c" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -116,7 +125,7 @@
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/analise-dados.py" />
+      <option name="SCRIPT_NAME" value="C:\Users\abimaelsoares\Documents\projeto_saldo_st_3c\App.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -125,7 +134,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="common" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="obsoleto-App" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="projeto_saldo_st_3c" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -133,11 +142,11 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$USER_HOME$/PycharmProjects/pythonProject/venv/Lib/site-packages/pandas/io" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$USER_HOME$/PycharmProjects/pythonProject/venv/Lib/site-packages/pandas/io/common.py" />
+      <option name="SCRIPT_NAME" value="C:\Users\abimaelsoares\Documents\projeto_saldo_st_3c\obsoleto-App.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -167,7 +176,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="relatorio_nfs_xml" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="teste_nova_interface_2" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="projeto_saldo_st_3c" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -175,11 +184,11 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/../python_projects/relatorio_nfe_xml" />
-      <option name="IS_MODULE_SDK" value="false" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/../python_projects/relatorio_nfe_xml/relatorio_nfs_xml.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/teste_nova_interface_2.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -190,11 +199,11 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.projeto_saldo_st" />
+        <item itemvalue="Python.App (1)" />
         <item itemvalue="Python.App" />
-        <item itemvalue="Python.analise-dados" />
-        <item itemvalue="Python.relatorio_nfs_xml" />
-        <item itemvalue="Python.common" />
+        <item itemvalue="Python.teste_nova_interface_2" />
+        <item itemvalue="Python.obsoleto-App" />
+        <item itemvalue="Python.projeto_saldo_st" />
       </list>
     </recent_temporary>
   </component>
@@ -375,7 +384,14 @@
       <option name="project" value="LOCAL" />
       <updated>1687456486079</updated>
     </task>
-    <option name="localTasksCounter" value="25" />
+    <task id="LOCAL-00025" summary="update">
+      <created>1687540036506</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1687540036506</updated>
+    </task>
+    <option name="localTasksCounter" value="26" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">

@@ -180,7 +180,6 @@ missing module named numpy.ndarray - imported by numpy (top-level), numpy.typing
 missing module named numpy.ufunc - imported by numpy (top-level), numpy.typing (top-level)
 missing module named numpy.histogramdd - imported by numpy (delayed), numpy.lib.twodim_base (delayed)
 missing module named xlwt - imported by pandas.io.excel._xlwt (delayed, conditional)
-missing module named xlsxwriter - imported by pandas.io.excel._xlsxwriter (delayed)
 missing module named 'odf.config' - imported by pandas.io.excel._odswriter (delayed)
 missing module named 'odf.style' - imported by pandas.io.excel._odswriter (delayed)
 missing module named 'odf.text' - imported by pandas.io.excel._odfreader (delayed), pandas.io.excel._odswriter (delayed)

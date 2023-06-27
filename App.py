@@ -1,142 +1,122 @@
-from tkinter import ttk
-import projeto_saldo_st
-from tkinter import *
 import tkinter as tk
 from tkinter import messagebox
+import projeto_saldo_st
 
-class Single_window(tk.Tk):
-    def __init__(self):
-        super().__init__()
-        self.title('Banco de Impostos ST')
-        self.state('zoomed')
+def abrir_tela_banco_impostos():
+    try:
+        pagina_inicial.destroy()  # Fechar a janela da página inicial
+    except:
+        pass
 
-def mensagem_exporta():
-    messagebox.showinfo("Exportar para Excel", "Planilhas Geradas com Sucesso !")
-def mensagem_exclui():
-    messagebox.showinfo("Exclusão", "Dados Excluídos com Sucesso!")
-def mensagem_importa():
-    messagebox.showinfo("Importação", "Planilha importada com Sucesso !!")
-def mensagem_processamento():
-    messagebox.showinfo("Processado !", "Dados processados com sucesso !!")
+    # Criação da janela do Banco de Impostos
+    root = tk.Tk()
+    root.title("BANCO DE IMPOSTOS")
+    root.configure(bg=cor_primaria)
 
+    menu_principal = tk.Menu(root)
+    root.config(menu=menu_principal)
 
-### ESTRUTURA SUPERIOR ###
+    # Adicionar opções ao menu
+    menu_arquivo = tk.Menu(menu_principal, tearoff=False)
+    menu_principal.add_cascade(label="Arquivo", menu=menu_arquivo)
+    menu_arquivo.add_command(label="Página Inicial", command=abrir_tela_banco_impostos)
+    menu_arquivo.add_separator()
+    menu_arquivo.add_command(label="Consultar Banco de Dados Individual", command="")
+    menu_arquivo.add_separator()
+    menu_arquivo.add_command(label="Consultar Banco de Dados Consolidado", command="")
+    menu_arquivo.add_separator()
+    menu_arquivo.add_command(label="Sair", command=root.quit)
 
-root = Single_window()
-title_app = tk.Frame(root)
-space_0 = ttk.Label(title_app,text="\n                                                                     "
-                                   "                                                     "
-                                   "                                                          Menu Principal\n"
-                                   " _________________________________________________________________________"
-                                   "______________________________________________________________________________________________"
-                                   "____________________________________________",width=6007, padding=1, font= "Arial 12", foreground="#a19f9f")
-space_0.grid(row=0,column=0)
-title_app.pack(side = 'top')
+    # Funções dos botões
+    def mensagem_exporta():
+        messagebox.showinfo("Exportar para Excel", "Planilhas Geradas com Sucesso !")
 
+    def mensagem_exclui():
+        messagebox.showinfo("Exclusão", "Dados Excluídos com Sucesso!")
 
-title_app = tk.Frame(root)
-space_001 = ttk.Label(title_app,text="",width=6007, padding=1, font= "Arial 12", foreground='black',background='#cacbd2')
-space_001.grid(row=1,column=1)
-title_app.pack(side = 'top')
+    def mensagem_importa():
+        messagebox.showinfo("Importação", "Planilha importada com Sucesso !!")
 
+    def mensagem_processamento():
+        messagebox.showinfo("Processado !", "Dados processados com sucesso !!")
 
-msg1 = "Importar Relatorio Saidas"
-msg2 = "Importar Relatorio Entradas"
-msg3 = "Exportar Template Entradas"
-msg30 = "Exportar Template Saidas"
-msg4 = "Exportar Saldo Atualizado"
-msg5 = f"Exclui Dados de Entradas"
-msg6 = f"Exclui Dados de Saidas"
+    # Cabeçalho
+    label_titulo = tk.Label(root, text="BANCO DE IMPOSTOS", font=("Arial", 20), bg=cor_hover, fg=cor_texto_2, pady=10, padx=300)
+    label_titulo.pack(pady=0)
 
-### PRIMEIRA LINHA ###
-button_f1000 = tk.Frame(root)
-space_1000 = PanedWindow(button_f1000,width=1000,background="#cacbd2")
-space_1000.grid(row=1, column=1)
+    # Criação dos botões com estilo personalizado
+    estilo_botao = {"font": ("Arial", 12), "width": 30}
 
-button_f1 = tk.Frame(root)
-button_4 = Button(button_f1, text = f"IRE \n \n {msg2}", bg="#95c45c",width=21, pady=60,padx=10, border=2,font='arial 16')
-button_4.grid(row=2, column=0, columnspan=1)
-button_4["command"] = lambda:[projeto_saldo_st.importa_entradas(), mensagem_importa()]
+    def on_enter(event):
+        event.widget.config(bg=cor_hover)
 
-space_1 = PanedWindow(button_f1,width=100,background="#cacbd2")
-space_1.grid(row=2, column=1, columnspan=1)
+    def on_leave(event):
+        event.widget.config(bg=cor_secundaria)
 
-button_5 = Button(button_f1, text = f"IRS \n \n {msg1}", bg="#95c45c",width=21, pady=60,padx=10, border=2,font='arial 16')
-button_5.grid(row=2, column=4)
-button_5["command"] = lambda:[projeto_saldo_st.importa_saidas(),mensagem_importa()]
-button_f1.pack(side = 'top')
+    btn_importar_entradas = tk.Button(root, text="Importar Entradas", command=lambda:[projeto_saldo_st.importa_entradas(), mensagem_importa()], bg=cor_secundaria, fg=cor_texto, **estilo_botao)
+    btn_importar_entradas.bind("<Enter>", on_enter)
+    btn_importar_entradas.bind("<Leave>", on_leave)
+    btn_importar_entradas.pack(pady=10)
 
-space_6 = PanedWindow(button_f1,width=100,background="#cacbd2")
-space_6.grid(row=2, column=3, columnspan=1)
+    btn_importar_saidas = tk.Button(root, text="Importar Saídas", command=lambda:[projeto_saldo_st.importa_saidas(),mensagem_importa()], bg=cor_secundaria, fg=cor_texto, **estilo_botao)
+    btn_importar_saidas.bind("<Enter>", on_enter)
+    btn_importar_saidas.bind("<Leave>", on_leave)
+    btn_importar_saidas.pack(pady=10)
 
-button_20 = Button(button_f1, text = f"EDE \n \n {msg5}", bg="#f44e3f",width=21, pady=60,padx=10, border=2,font='arial 16')
-button_20.grid(row=2, column=2)
-button_20["command"] = lambda:[projeto_saldo_st.exclui_dados_entradas(),mensagem_exclui()]
-button_f1.pack(side = 'top')
+    btn_excluir_dados_entradas = tk.Button(root, text="Excluir Dados de Entradas", command=lambda:[projeto_saldo_st.exclui_dados_entradas(),mensagem_exclui()], bg=cor_secundaria, fg=cor_texto, **estilo_botao)
+    btn_excluir_dados_entradas.bind("<Enter>", on_enter)
+    btn_excluir_dados_entradas.bind("<Leave>", on_leave)
+    btn_excluir_dados_entradas.pack(pady=10)
 
-space_6 = PanedWindow(button_f1,width=100,background="#cacbd2")
-space_6.grid(row=2, column=5, columnspan=1)
+    btn_exportar_template_entradas = tk.Button(root, text="Exportar Planilha Template Entradas", command=lambda:[projeto_saldo_st.planilha_modelo_template_entradas(),mensagem_exporta()], bg=cor_secundaria, fg=cor_texto, **estilo_botao)
+    btn_exportar_template_entradas.bind("<Enter>", on_enter)
+    btn_exportar_template_entradas.bind("<Leave>", on_leave)
+    btn_exportar_template_entradas.pack(pady=10)
 
-button_33 = tk.Frame(root)
-button_40 = Button(button_f1, text = f"EDS \n \n {msg6}", bg="#f44e3f",width=21, pady=60,padx=10, border=2,font='arial 16')
-button_40.grid(row=2, column=6)
-button_40["command"] = lambda:[projeto_saldo_st.exclui_dados_saidas(), mensagem_exclui()]
-button_f1.pack(side = 'top')
+    btn_exportar_template_saidas = tk.Button(root, text="Exportar Planilha Template Saídas", command=lambda:[projeto_saldo_st.planilha_modelo_template_saidas(),mensagem_exporta()], bg=cor_secundaria, fg=cor_texto, **estilo_botao)
+    btn_exportar_template_saidas.bind("<Enter>", on_enter)
+    btn_exportar_template_saidas.bind("<Leave>", on_leave)
+    btn_exportar_template_saidas.pack(pady=10)
 
-
-### SEGUNDA LINHA ###
-
-button_f2 = tk.Frame(root)
-button_7 = Button(button_f2, text = f"ETE \n \n {msg3}", bg="#d99591",width=21, pady=60,padx=10, border=2,font='arial 16')
-button_7.grid(row=3, column=0)
-button_7["command"] = lambda:[projeto_saldo_st.planilha_modelo_template_entradas(),mensagem_exporta()]
-
-space_2 = PanedWindow(button_f2,width=100,height=30,background="#cacbd2")
-space_2.grid(row=2, column=1)
-
-button_7 = Button(button_f2, text = f"ETS \n \n {msg30}", bg="#d99591",width=21, pady=60,padx=10, border=2,font='arial 16')
-button_7.grid(row=3, column=2)
-button_7["command"] = lambda:[projeto_saldo_st.planilha_modelo_template_saidas(),mensagem_exporta()]
-
-space_2 = PanedWindow(button_f2,width=100,height=30,background="#cacbd2")
-space_2.grid(row=2, column=3)
-
-button_8 = Button(button_f2, text = f"ESA \n \n {msg4}", bg="#d99591",width=21, pady=60,padx=10, border=2,font='arial 16')
-button_8.grid(row=3, column=4)
-button_8['command'] = lambda:[projeto_saldo_st.exportar_saldo_atual(),mensagem_exporta()]
-button_f2.pack(side = 'top')
-
-### ESTRUTURA BOTTOM ###
-
-title_app10 = tk.Frame(root)
-space_10 = Label(title_app10,text="",width=2700, font= "Arial 24 bold",border=1,foreground="#cacbd2")
-space_10.grid(row=6,column=0)
-title_app10.pack(side = 'bottom')
-
-button_f40 = tk.Frame(root)
-button_120 = Button(button_f40, text = '',width=1500, pady=7,padx=2000,font='arial 12 bold', border=0,background="#cacbd2")
-button_120.grid(row=8, column=0)
-button_f40.pack(side = 'bottom')
-
-### LINHA FINAL ###
-
-button_f4 = tk.Frame(root)
-button_12 = Button(button_f4, text = 'Processar',bg="#a19f9f",width=15, pady=10,padx=20,font='arial 12 bold')
-button_12.grid(row=7, column=0)
-button_12['command'] = lambda:[projeto_saldo_st.criar_coluna_tipo_contabilizacao_saidas(), projeto_saldo_st.saldo_atual_provisorio(),
+    btn_consistir_saldo = tk.Button(root, text="Consistir Saldo", command=lambda:[projeto_saldo_st.criar_coluna_tipo_contabilizacao_saidas(), projeto_saldo_st.saldo_atual_provisorio(),
                                projeto_saldo_st.sintetiza_dados()
-                                ,projeto_saldo_st.saldo_consistido(),mensagem_processamento()]
-button_f4.pack(side = 'bottom')
+                                ,projeto_saldo_st.saldo_consistido(),mensagem_processamento()], bg=cor_secundaria, fg=cor_texto, **estilo_botao)
+    btn_consistir_saldo.bind("<Enter>", on_enter)
+    btn_consistir_saldo.bind("<Leave>", on_leave)
+    btn_consistir_saldo.pack(pady=10)
 
+    # Rodapé
+    label_rodape = tk.Label(root, text="Solucões Fiscais 3C", font=("Arial", 9), bg=cor_hover, fg=cor_texto_2, pady=10)
+    label_rodape.pack(side="bottom", fill="x")
 
+# Definindo uma paleta de cores
+cor_primaria = "#222222"  # Cinza escuro
+cor_secundaria = "#FFFFFF"  # Branco
+cor_texto = "#000000"  # Preto
+cor_texto_2 = "#383837"
+cor_rodape = "#CCCCCC"  # Cinza claro
+cor_hover = "#E0E0E0"  # Cinza claro (intensidade alterada)
 
-button_f1.configure(background="#cacbd2")
-button_f1000.configure(background="#cacbd2")
-button_f2.configure(background="#cacbd2")
-root.configure(background="#cacbd2")
-root.mainloop()
+# Criação da janela da página inicial
+pagina_inicial = tk.Tk()
+pagina_inicial.title("Banco de Impostos")
+pagina_inicial.configure(bg=cor_primaria)
 
+# Cabeçalho
+label_titulo = tk.Label(pagina_inicial, text="BANCO DE IMPOSTOS", font=("Arial", 20), bg=cor_primaria, fg=cor_hover, pady=10)
+label_titulo.pack(pady=20)
 
+# Conteúdo da página inicial
+label_informacoes = tk.Label(pagina_inicial, text="Bem-vindo ao Banco de Impostos!\n \nEste é um software para geração, gerenciamento e cálculo de impostos e saldos.\n "
+                                                  "\nEle foi desenvolvido pela equipe de Soluções Fiscais, Inovação e Tecnologia da Controladoria do Grupo 3 Corações", font=("Arial", 12), bg=cor_primaria, fg=cor_hover)
+label_informacoes.pack(pady=100, padx=50)
 
+# Rodapé
+label_rodape = tk.Label(pagina_inicial, text="Solucões Fiscais 3C", font=("Arial", 10), bg=cor_primaria,fg=cor_texto_2)
+label_rodape.pack(side="bottom", fill="x")
 
+# Agendar a abertura da tela do Banco de Impostos após 3 segundos
+pagina_inicial.after(3000, abrir_tela_banco_impostos)
 
+# Execução da interface gráfica
+pagina_inicial.mainloop()
