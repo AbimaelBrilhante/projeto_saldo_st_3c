@@ -5,9 +5,22 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="09d18b57-e3c3-4b4b-958a-00386544fcf3" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/App.spec" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/Bando de Impostos 1.2.4.exe" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/Bando de Impostos 1.2.4.zip" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dist/Banco de Impostos 1.4.4.exe" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dist/Banco de Impostos 1.4.4.zip" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/teste.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/App.py" beforeDir="false" afterPath="$PROJECT_DIR$/App.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/App/Analysis-00.toc" beforeDir="false" afterPath="$PROJECT_DIR$/build/App/Analysis-00.toc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/App/App.pkg" beforeDir="false" afterPath="$PROJECT_DIR$/build/App/App.pkg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/App/EXE-00.toc" beforeDir="false" afterPath="$PROJECT_DIR$/build/App/EXE-00.toc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/App/PKG-00.toc" beforeDir="false" afterPath="$PROJECT_DIR$/build/App/PKG-00.toc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/App/PYZ-00.pyz" beforeDir="false" afterPath="$PROJECT_DIR$/build/App/PYZ-00.pyz" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/App/base_library.zip" beforeDir="false" afterPath="$PROJECT_DIR$/build/App/base_library.zip" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/App/xref-App.html" beforeDir="false" afterPath="$PROJECT_DIR$/build/App/xref-App.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/Bando de Impostos 1.2.4.exe" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/Bando de Impostos 1.2.4.zip" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/projeto_saldo_st.py" beforeDir="false" afterPath="$PROJECT_DIR$/projeto_saldo_st.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -119,27 +132,6 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="obsoleto-App" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="projeto_saldo_st_3c" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="C:\Users\abimaelsoares\Documents\projeto_saldo_st_3c\obsoleto-App.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
     <configuration name="projeto_saldo_st" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="projeto_saldo_st_3c" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -153,6 +145,27 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/projeto_saldo_st.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="teste" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="projeto_saldo_st_3c" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/teste.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -185,10 +198,10 @@
     <recent_temporary>
       <list>
         <item itemvalue="Python.App (1)" />
+        <item itemvalue="Python.projeto_saldo_st" />
+        <item itemvalue="Python.teste" />
         <item itemvalue="Python.App" />
         <item itemvalue="Python.teste_nova_interface_2" />
-        <item itemvalue="Python.obsoleto-App" />
-        <item itemvalue="Python.projeto_saldo_st" />
       </list>
     </recent_temporary>
   </component>
@@ -383,7 +396,14 @@
       <option name="project" value="LOCAL" />
       <updated>1687875199026</updated>
     </task>
-    <option name="localTasksCounter" value="27" />
+    <task id="LOCAL-00027" summary="update">
+      <created>1687875687010</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1687875687011</updated>
+    </task>
+    <option name="localTasksCounter" value="28" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
