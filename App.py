@@ -10,7 +10,7 @@ def abrir_tela_banco_impostos():
 
     # Criação da janela do Banco de Impostos
     root = tk.Tk()
-    root.title("BANCO DE IMPOSTOS 1.6.5")
+    root.title("Banco de Impostos 1.8.12")
     root.configure(bg=cor_primaria)
     root.state('zoomed')
 
@@ -60,17 +60,27 @@ def abrir_tela_banco_impostos():
     btn_exportar_template_entradas.bind("<Leave>", on_leave)
     btn_exportar_template_entradas.pack(pady=10)
 
+    btn_exportar_template_entradas = tk.Button(root, text="Conciliar dados importados", command=lambda:[projeto_saldo_st.exporta_consolidado()], bg=cor_secundaria, fg=cor_texto, **estilo_botao)
+    btn_exportar_template_entradas.bind("<Enter>", on_enter)
+    btn_exportar_template_entradas.bind("<Leave>", on_leave)
+    btn_exportar_template_entradas.pack(pady=10)
+
     btn_importar_saidas = tk.Button(root, text="Importar Saídas", command=lambda:[projeto_saldo_st.importa_saidas()], bg=cor_secundaria, fg=cor_texto, **estilo_botao)
-    # btn_importar_saidas.bind("<Enter>", on_enter)
-    # btn_importar_saidas.bind("<Leave>", on_leave)
+    btn_importar_saidas.bind("<Enter>", on_enter)
+    btn_importar_saidas.bind("<Leave>", on_leave)
     btn_importar_saidas.pack(pady=10)
 
-    btn_exportar_template_saidas = tk.Button(root, text="Exportar Planilha Template Saídas", command=lambda:[projeto_saldo_st.planilha_modelo_template_saidas()], bg=cor_secundaria, fg=cor_texto, **estilo_botao)
-    # btn_exportar_template_saidas.bind("<Enter>", on_enter)
-    # btn_exportar_template_saidas.bind("<Leave>", on_leave)
+    btn_exportar_template_saidas = tk.Button(root, text="Importar Devoluções", command=lambda:[projeto_saldo_st.importa_devolucoes()], bg=cor_secundaria, fg=cor_texto, **estilo_botao)
+    btn_exportar_template_saidas.bind("<Enter>", on_enter)
+    btn_exportar_template_saidas.bind("<Leave>", on_leave)
     btn_exportar_template_saidas.pack(pady=10)
 
-    btn_consistir_saldo = tk.Button(root, text="Consistir Saldo", command=lambda:[projeto_saldo_st.exporta_consolidado()], bg=cor_secundaria, fg=cor_texto, **estilo_botao)
+    btn_consistir_saldo = tk.Button(root, text="Processar Informações Importadas", command=lambda:[projeto_saldo_st.trata_dados()], bg=cor_secundaria, fg=cor_texto, **estilo_botao)
+    btn_consistir_saldo.bind("<Enter>", on_enter)
+    btn_consistir_saldo.bind("<Leave>", on_leave)
+    btn_consistir_saldo.pack(pady=10)
+
+    btn_consistir_saldo = tk.Button(root, text="Encerrar o mês", command=lambda:[projeto_saldo_st.encerrar_mes()], bg=cor_secundaria, fg=cor_texto, **estilo_botao)
     btn_consistir_saldo.bind("<Enter>", on_enter)
     btn_consistir_saldo.bind("<Leave>", on_leave)
     btn_consistir_saldo.pack(pady=10)
@@ -106,7 +116,7 @@ label_rodape = tk.Label(pagina_inicial, text="Solucões Fiscais 3C", font=("Aria
 label_rodape.pack(side="bottom", fill="x")
 
 # Agendar a abertura da tela do Banco de Impostos após 3 segundos
-pagina_inicial.after(3000, abrir_tela_banco_impostos)
+pagina_inicial.after(10, abrir_tela_banco_impostos)
 
 # Execução da interface gráfica
 pagina_inicial.mainloop()
